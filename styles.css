@@ -470,7 +470,7 @@ a {
 .countdown {
   position: relative;
   z-index: 2;
-  padding: 120px 1.5rem 40px;
+  padding: 200px 1.5rem 40px;
   margin: 0;
   transform: none;
   text-align: center;
@@ -1157,5 +1157,12 @@ a {
   .animate-item {
     opacity: 1 !important;
     transform: none !important;
+  }
+}
+
+
+@media (max-width: 767px) {
+  .hero__content {
+    transform: translateY(150px);
   }
 }
