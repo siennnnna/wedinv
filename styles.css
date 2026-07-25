@@ -420,12 +420,13 @@ a {
 .hero__content {
   position: relative;
   z-index: 2;
-  width: 100%;
   text-align: center;
-  color: white;
-  padding: 0 1.5rem 1rem;
-  margin-bottom: 0;
+  color: var(--color-white);
+  padding: 0 var(--spacing-md) var(--spacing-lg);
+  width: 200%;
+  transform: translateY(250px);
 }
+
 
 .hero__label {
   font-family: var(--font-display);
@@ -1157,12 +1158,5 @@ a {
   .animate-item {
     opacity: 1 !important;
     transform: none !important;
-  }
-}
-
-
-@media (max-width: 767px) {
-  .hero__content {
-    transform: translateY(150px);
   }
 }
