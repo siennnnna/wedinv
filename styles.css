@@ -81,9 +81,11 @@ body.no-scroll {
 }
 
 img {
-  max-width: 100%;
+  display: block;
+  max-width: 50;
   height: auto;
 }
+
 
 button {
   cursor: pointer;
