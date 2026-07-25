@@ -423,8 +423,8 @@ a {
   width: 100%;
   text-align: center;
   color: white;
-  padding: 0 1.5rem 1rem;
-  transform: none;
+  padding: 0 1.5rem 0;
+  margin-bottom: -120px;
 }
 
 .hero__label {
@@ -472,7 +472,7 @@ a {
   z-index: 2;
   width: 100%;
   padding: 0 1.5rem 30px;
-  transform: none;
+  margin-bottom: -120px;
   text-align: center;
   color: white;
 }
