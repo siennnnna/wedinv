@@ -82,7 +82,7 @@ body.no-scroll {
 
 img {
   display: block;
-  max-width: 50%;
+  max-width: 100%;
   height: auto;
 }
 
@@ -357,7 +357,7 @@ a {
 }
 
 .section__inner {
-  max-width: 640px;
+  max-width: 100px;
   margin: 0 auto;
   padding: 0 var(--spacing-md);
   text-align: center;
