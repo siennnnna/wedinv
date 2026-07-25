@@ -471,11 +471,10 @@ a {
 .countdown {
   position: relative;
   z-index: 2;
-  padding: 200px 1.5rem 40px;
-  margin: 0;
-  transform: none;
+  padding: 0 var(--spacing-md) 20px;
+  transform: translateY(250px);
   text-align: center;
-  color: white;
+  color: var(--color-white);
 }
 
 .countdown__label {
