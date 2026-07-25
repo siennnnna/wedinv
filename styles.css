@@ -424,7 +424,7 @@ a {
   color: var(--color-white);
   padding: 0 var(--spacing-md) var(--spacing-lg);
   width: 200%;
-  transform: translateY(250px);
+  transform: translateY(400px);
 }
 
 
