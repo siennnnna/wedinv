@@ -385,14 +385,18 @@ a {
    Hero Section
    ═══════════════════════════════════════════ */
 .hero {
-  position: top;
-  height: 0svh;
+  position: relative;
+  height: 100svh;
   min-height: 900px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  padding: 0;
+  overflow: hidden;
+  background-color: #3a3228;
 }
+
 
 .hero__overlay {
   position: absolute;
