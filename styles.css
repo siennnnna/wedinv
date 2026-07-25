@@ -386,7 +386,7 @@ a {
    ═══════════════════════════════════════════ */
 .hero {
   position: relative;
-  height: 100svh;
+  height: 0svh;
   min-height: 900px;
   overflow: hidden;
   display: flex;
