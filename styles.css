@@ -386,7 +386,7 @@ a {
 .hero {
   position: relative;
   min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 500dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -403,7 +403,7 @@ a {
     to bottom,
     transparent 0%,
     transparent 40%,
-    rgba(58, 50, 40, 0.3) 60%,
+    rgba(58, 50, 40, 0.45) 60%,
     rgba(58, 50, 40, 0.75) 85%,
     rgba(58, 50, 40, 0.9) 100%
   );
@@ -412,11 +412,11 @@ a {
 
 .hero__photo {
   position: absolute;
-  inset: 0;
+  inset: 100;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 30%;
+  object-position: center 18%;
 }
 
 .hero__content {
@@ -425,7 +425,8 @@ a {
   text-align: center;
   color: var(--color-white);
   padding: 0 var(--spacing-md) var(--spacing-lg);
-  width: 100%;
+  width: 200%;
+transform: translateY(38px); 
 }
 
 .hero__label {
@@ -441,10 +442,10 @@ a {
 .hero__names {
   font-family: var(--font-serif);
   font-size: 2rem;
-  font-weight: 200;
+  font-weight: 300;
   letter-spacing: 8px;
   margin-bottom: var(--spacing-md);
-  line-height: 1.4;
+  line-height: 0.9;
 }
 
 .hero__divider {
@@ -460,7 +461,7 @@ a {
   font-weight: 300;
   letter-spacing: 2px;
   opacity: 0.85;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .hero__venue {
@@ -687,13 +688,13 @@ a {
 
 .story__photo-item img {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 4/3;
   object-fit: cover;
   transition: transform var(--transition-slow);
 }
 
 .story__photo-item:hover img {
-  transform: scale(1.03);
+  transform: scale(1.3);
 }
 
 /* ═══════════════════════════════════════════

@@ -316,7 +316,7 @@
       <div class="parent-row">
         ${parentLine(b.father, b.mother, b.fatherDeceased, b.motherDeceased)}
         <span class="parent-dot">●</span>
-        의 딸 <span class="child-name">${b.name}</span>
+        의&nbsp;&nbsp;딸 &nbsp;<span class="child-name">${b.name}</span>
       </div>
     `;
 
@@ -409,147 +409,321 @@
     });
   }
 
-  /* ═══════════════════════════════════════════
+
+
+ /* ═══════════════════════════════════════════
      Story Section
      ═══════════════════════════════════════════ */
 
-  function initStory(storyImages) {
-    $('#storyTitle').textContent = CONFIG.story.title;
-    $('#storyContent').textContent = CONFIG.story.content;
+ function initStory(storyImages) {
+  $('#storyTitle').textContent = CONFIG.story.title;
+  $('#storyContent').textContent = CONFIG.story.content;
 
-    const container = $('#storyPhotos');
-    // Remove loading placeholder if present
-    const placeholder = container.querySelector('.loading-placeholder');
-    if (placeholder) placeholder.remove();
+  const container = $('#storyPhotos');
 
-    if (storyImages.length === 0) return;
+  container.style.cssText = `
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
 
-    storyImages.forEach((src, i) => {
-      const div = document.createElement('div');
-      div.className = 'story__photo-item animate-item';
-      div.setAttribute('data-animate', 'fade-up');
-      div.innerHTML = `<img src="${src}" alt="스토리 사진 ${i + 1}" loading="lazy">`;
-      div.addEventListener('click', () => openPhotoModal(storyImages, i));
-      container.appendChild(div);
-    });
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    width: 100%;
+    max-width: 100%;
+
+    padding: 0;
+    margin: 0;
+
+    -webkit-overflow-scrolling: touch;
+  `;
+
+  const placeholder = container.querySelector('.loading-placeholder');
+  if (placeholder) placeholder.remove();
+
+  if (!storyImages || storyImages.length === 0) return;
+
+  storyImages.forEach((src, i) => {
+    const div = document.createElement('div');
+    div.className = 'story__photo-item';
+
+    div.style.cssText = `
+      flex: 0 0 40%;
+      margin-right: 1px;
+
+      aspect-ratio: 8 / 16;
+      overflow: hidden;
+    `;
+
+    div.innerHTML = `
+      <img
+        src="${src}"
+        alt="스토리 사진 ${i + 1}"
+        loading="lazy"
+        style="
+          width: 100%;
+          height: 100%;
+
+          object-fit: cover;
+          object-position: center;
+
+          display: block;
+          border: 0;
+        "
+      />
+    `;
+
+    container.appendChild(div);
+  });
+}
+/* ═══════════════════════════════════════════
+   Gallery Section
+   ═══════════════════════════════════════════ */
+
+function initGallery(galleryImages) {
+  const grid = $('#galleryGrid');
+
+  const placeholder = grid.querySelector('.loading-placeholder');
+  if (placeholder) placeholder.remove();
+
+  if (galleryImages.length === 0) {
+    const gallerySection = $('#gallery');
+    if (gallerySection) gallerySection.style.display = 'none';
+    return;
   }
 
-  /* ═══════════════════════════════════════════
-     Gallery Section
-     ═══════════════════════════════════════════ */
+  galleryImages.forEach((src, i) => {
+    const div = document.createElement('div');
+    div.className = 'gallery__item animate-item';
+    div.setAttribute('data-animate', 'scale-in');
 
-  function initGallery(galleryImages) {
-    const grid = $('#galleryGrid');
-    // Remove loading placeholder if present
-    const placeholder = grid.querySelector('.loading-placeholder');
-    if (placeholder) placeholder.remove();
+    div.innerHTML = `
+      <img
+        src="${src}"
+        alt="갤러리 사진 ${i + 1}"
+        loading="lazy"
+        draggable="false"
+      >
+    `;
 
-    if (galleryImages.length === 0) {
-      // Hide gallery section if no images found
-      const gallerySection = $('#gallery');
-      if (gallerySection) gallerySection.style.display = 'none';
+    div.addEventListener('click', () => openPhotoModal(galleryImages, i));
+
+    grid.appendChild(div);
+  });
+}
+
+
+/* ═══════════════════════════════════════════
+   Photo Modal
+   Swipe + DoubleTap Block + Pinch Block
+   ═══════════════════════════════════════════ */
+
+let modalImages = [];
+let modalIndex = 0;
+
+let touchStartX = 0;
+let touchStartY = 0;
+
+let touchEndX = 0;
+let touchEndY = 0;
+
+let lastTap = 0;
+
+function openPhotoModal(images, index) {
+
+  modalImages = images;
+  modalIndex = index;
+
+  showModalImage();
+
+  $('#photoModal').classList.add('is-open');
+  document.body.classList.add('no-scroll');
+
+}
+
+function closePhotoModal() {
+
+  $('#photoModal').classList.remove('is-open');
+  document.body.classList.remove('no-scroll');
+
+}
+
+function showModalImage() {
+
+  const img = $('#modalImg');
+
+  img.src = modalImages[modalIndex];
+  img.draggable = false;
+
+  $('#modalCounter').textContent =
+    `${modalIndex + 1} / ${modalImages.length}`;
+
+  $('#modalPrev').style.display =
+    modalIndex > 0 ? '' : 'none';
+
+  $('#modalNext').style.display =
+    modalIndex < modalImages.length - 1 ? '' : 'none';
+
+}
+
+function modalNavigate(dir) {
+
+  const newIndex = modalIndex + dir;
+
+  if (newIndex < 0) return;
+  if (newIndex >= modalImages.length) return;
+
+  modalIndex = newIndex;
+
+  showModalImage();
+
+}
+
+function initPhotoModal() {
+
+  $('#modalClose').addEventListener('click', closePhotoModal);
+
+  $('#modalPrev').addEventListener('click', () => modalNavigate(-1));
+
+  $('#modalNext').addEventListener('click', () => modalNavigate(1));
+
+  const modal = $('#photoModal');
+  const container = $('#modalContainer');
+  const img = $('#modalImg');
+
+  modal.addEventListener('click', (e) => {
+
+    if (
+      e.target === modal ||
+      e.target === container
+    ) {
+      closePhotoModal();
+    }
+
+  });
+
+  document.addEventListener('keydown', (e) => {
+
+    if (!modal.classList.contains('is-open')) return;
+
+    switch (e.key) {
+
+      case 'Escape':
+        closePhotoModal();
+        break;
+
+      case 'ArrowLeft':
+        modalNavigate(-1);
+        break;
+
+      case 'ArrowRight':
+        modalNavigate(1);
+        break;
+
+    }
+
+  });
+
+  function touchStart(e) {
+
+    if (e.touches.length > 1) {
+      e.preventDefault();
       return;
     }
 
-    galleryImages.forEach((src, i) => {
-      const div = document.createElement('div');
-      div.className = 'gallery__item animate-item';
-      div.setAttribute('data-animate', 'scale-in');
-      div.innerHTML = `<img src="${src}" alt="갤러리 사진 ${i + 1}" loading="lazy">`;
-      div.addEventListener('click', () => openPhotoModal(galleryImages, i));
-      grid.appendChild(div);
-    });
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+
   }
 
-  /* ═══════════════════════════════════════════
-     Photo Modal (with swipe)
-     ═══════════════════════════════════════════ */
+  function touchMove(e) {
 
-  let modalImages = [];
-  let modalIndex = 0;
-  let touchStartX = 0;
-  let touchEndX = 0;
-  let touchStartY = 0;
-  let touchEndY = 0;
-
-  function openPhotoModal(images, index) {
-    modalImages = images;
-    modalIndex = index;
-    showModalImage();
-    $('#photoModal').classList.add('is-open');
-    document.body.classList.add('no-scroll');
-  }
-
-  function closePhotoModal() {
-    $('#photoModal').classList.remove('is-open');
-    document.body.classList.remove('no-scroll');
-  }
-
-  function showModalImage() {
-    const img = $('#modalImg');
-    img.src = modalImages[modalIndex];
-    $('#modalCounter').textContent = `${modalIndex + 1} / ${modalImages.length}`;
-
-    $('#modalPrev').style.display = modalIndex > 0 ? '' : 'none';
-    $('#modalNext').style.display = modalIndex < modalImages.length - 1 ? '' : 'none';
-  }
-
-  function modalNavigate(dir) {
-    const newIndex = modalIndex + dir;
-    if (newIndex >= 0 && newIndex < modalImages.length) {
-      modalIndex = newIndex;
-      showModalImage();
+    // 핀치줌 방지
+    if (e.touches.length > 1) {
+      e.preventDefault();
     }
+
   }
 
-  function initPhotoModal() {
-    $('#modalClose').addEventListener('click', closePhotoModal);
-    $('#modalPrev').addEventListener('click', () => modalNavigate(-1));
-    $('#modalNext').addEventListener('click', () => modalNavigate(1));
+  function touchEnd(e) {
 
-    const modal = $('#photoModal');
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal || e.target.id === 'modalContainer') {
-        closePhotoModal();
-      }
-    });
+    const now = Date.now();
 
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-      if (!modal.classList.contains('is-open')) return;
-      if (e.key === 'Escape') closePhotoModal();
-      if (e.key === 'ArrowLeft') modalNavigate(-1);
-      if (e.key === 'ArrowRight') modalNavigate(1);
-    });
-
-    // Swipe support
-    const container = $('#modalContainer');
-
-    container.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-      touchStartY = e.changedTouches[0].screenY;
-    }, { passive: true });
-
-    container.addEventListener('touchend', (e) => {
-      touchEndX = e.changedTouches[0].screenX;
-      touchEndY = e.changedTouches[0].screenY;
-      handleSwipe();
-    }, { passive: true });
-  }
-
-  function handleSwipe() {
-    const diffX = touchStartX - touchEndX;
-    const diffY = touchStartY - touchEndY;
-    const minSwipe = 50;
-
-    if (Math.abs(diffX) < minSwipe || Math.abs(diffX) < Math.abs(diffY)) return;
-
-    if (diffX > 0) {
-      modalNavigate(1); // swipe left -> next
-    } else {
-      modalNavigate(-1); // swipe right -> prev
+    // 더블탭 방지
+    if (now - lastTap < 350) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
     }
+
+    lastTap = now;
+
+    touchEndX = e.changedTouches[0].screenX;
+    touchEndY = e.changedTouches[0].screenY;
+
+    handleSwipe();
+
   }
+
+  [
+    container,
+    img
+  ].forEach(el => {
+
+    el.addEventListener('touchstart', touchStart, {
+      passive: false
+    });
+
+    el.addEventListener('touchmove', touchMove, {
+      passive: false
+    });
+
+    el.addEventListener('touchend', touchEnd, {
+      passive: false
+    });
+
+    el.addEventListener('gesturestart', e => {
+      e.preventDefault();
+    });
+
+    el.addEventListener('gesturechange', e => {
+      e.preventDefault();
+    });
+
+    el.addEventListener('gestureend', e => {
+      e.preventDefault();
+    });
+
+    el.addEventListener('contextmenu', e => {
+      e.preventDefault();
+    });
+
+  });
+
+}
+
+function handleSwipe() {
+
+  const diffX = touchStartX - touchEndX;
+  const diffY = touchStartY - touchEndY;
+
+  const minSwipe = 50;
+
+  if (Math.abs(diffX) < minSwipe) return;
+
+  if (Math.abs(diffX) < Math.abs(diffY)) return;
+
+  if (diffX > 0) {
+
+    modalNavigate(1);
+
+  } else {
+
+    modalNavigate(-1);
+
+  }
+
+}
 
   /* ═══════════════════════════════════════════
      Location Section
@@ -737,3 +911,6 @@
     init();
   }
 })();
+
+
+

@@ -203,5 +203,47 @@
   </main>
 
   <script src="script.js"></script>
+  
 </body>
 </html>
+<!-- 🎵 SIMPLE BGM (LINK ONLY VERSION) -->
+<iframe 
+  id="bgm"
+  width="0"
+  height="0"
+  style="display:none;"
+  allow="autoplay"
+></iframe>
+
+<script>
+// 🎵 여기 "유튜브 링크"만 넣으면 됨
+const YOUTUBE_LINK = "https://music.youtube.com/playlist?list=LM";
+
+document.getElementById("bgm").src = YOUTUBE_LINK;
+
+// 📱 모바일 자동재생 보장
+function unlock() {
+  const iframe = document.getElementById("bgm");
+  iframe.src = YOUTUBE_LINK;
+}
+
+document.addEventListener("click", unlock, { once: true });
+document.addEventListener("touchstart", unlock, { once: true });
+</script>
+<!-- 🎵 GUARANTEED BGM (STABLE VERSION) -->
+<audio id="bgm" loop autoplay muted>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const audio = document.getElementById("bgm");
+
+// 📱 첫 터치 시 무조건 재생 (모바일 대응 핵심)
+function unlockAudio() {
+  audio.muted = false;
+  audio.play().catch(()=>{});
+}
+
+document.addEventListener("click", unlockAudio, { once: true });
+document.addEventListener("touchstart", unlockAudio, { once: true });
+</script>
