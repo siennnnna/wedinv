@@ -386,7 +386,7 @@ a {
 .hero {
   position: relative;
   height: 100svh;
-  min-height: 1000px;
+  min-height: 900px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -423,8 +423,8 @@ a {
   width: 100%;
   text-align: center;
   color: white;
-  padding: 0 1.5rem 0;
-  margin-bottom: -120px;
+  padding: 0 1.5rem 1rem;
+  margin-bottom: 0;
 }
 
 .hero__label {
@@ -471,8 +471,8 @@ a {
   position: relative;
   z-index: 2;
   width: 100%;
-  padding: 0 1.5rem 30px;
-  margin-bottom: -120px;
+  padding: 0 1.5rem 40px;
+  margin-bottom: 0;
   text-align: center;
   color: white;
 }
