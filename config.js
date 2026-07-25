@@ -14,50 +14,50 @@
 
 const CONFIG = {
   // ── 초대장 열기 ──
-  useCurtain: false,  // 초대장 열기 화면 사용 여부 (true: 사용, false: 바로 본문 표시)
+  useCurtain: true,  // 초대장 열기 화면 사용 여부 (true: 사용, false: 바로 본문 표시)
 
   // ── 메인 (히어로) ──
   groom: {
-    name: "신랑",
+    name: "강무성",
     nameEn: "Groom",
-    father: "여기서이렇게이름을바꾸시면됩니다",
-    mother: "어머니",
+    father: "강신창",
+    mother: "배복임",
     fatherDeceased: false,
     motherDeceased: false
   },
 
   bride: {
-    name: "신부",
+    name: "정수연",
     nameEn: "Bride",
-    father: "아버지",
-    mother: "어머니",
+    father: "정성채",
+    mother: "김민선",
     fatherDeceased: false,
     motherDeceased: false
   },
 
   wedding: {
-    date: "2026-05-09",
-    time: "13:00",
-    venue: "예식장 이름",
-    hall: "그랜드홀 5층",
-    address: "서울특별시 강남구 테헤란로 123",
-    tel: "02-1234-5678",
+    date: "2026-09-19",
+    time: "18:00",
+    venue: "CN웨딩홀 계산점",
+    hall: "예식 2층 베르테홀 / 신부대기실 3층",
+    address: "계양구 경명대로 1108",
+    tel: "032-546-0070",
     mapLinks: {
-      kakao: "https://map.kakao.com/",
-      naver: "https://map.naver.com/"
+      kakao: "https://kko.to/-iDbg-HSlW",
+      naver: "https://naver.me/GNWkzB3T"
     }
   },
 
   // ── 인사말 ──
   greeting: {
     title: "소중한 분들을 초대합니다",
-    content: "서로 다른 길을 걸어온 두 사람이\n이제 같은 길을 함께 걸어가려 합니다.\n\n저희의 새로운 시작을\n축복해 주시면 감사하겠습니다."
+    content: "같은 방향을 바라보며\n같은 내일을 약속하려 합니다.\n\n저희의 첫걸음에 함께 해 주시면\n보내주신 축복을 오래 간직하겠습니다."
   },
 
   // ── 우리의 이야기 ──
   story: {
-    title: "우리의 이야기",
-    content: "서로 다른 길을 걷던 두 사람이\n하나의 길을 함께 걷게 되었습니다.\n\n여러분을 소중한 자리에 초대합니다."
+    title: "두 사람이",
+    content: "꽃과 나무처럼 걸어와서\n서로의 모든 것이 되기 위해\n오랜 기다림 끝에 혼례식을 치르는 날\n세상은 더욱 아름다워라\n\n\n이해인 <사랑의 사람들이여>."
   },
 
   // ── 오시는 길 ──
@@ -66,20 +66,20 @@ const CONFIG = {
   // ── 마음 전하실 곳 ──
   accounts: {
     groom: [
-      { role: "신랑", name: "홍길동", bank: "국민은행", number: "000-000-000000" },
-      { role: "아버지", name: "홍판서", bank: "신한은행", number: "000-000-000000" },
-      { role: "어머니", name: "김부인", bank: "우리은행", number: "000-000-000000" }
+      { role: "신랑", name: "강무성&nbsp; &nbsp; ", bank: "국민은행", number: "3333-08-0560900" },
+      { role: "아버지", name: "강신창&nbsp; &nbsp; ", bank: "국민은행", number: "3333-08-0560900" },
+      { role: "어머니", name: "배복임&nbsp; &nbsp; ", bank: "국민은행", number: "3333-08-0560900" }
     ],
     bride: [
-      { role: "신부", name: "김영희", bank: "하나은행", number: "000-000-000000" },
-      { role: "아버지", name: "김사장", bank: "기업은행", number: "000-000-000000" },
-      { role: "어머니", name: "이부인", bank: "농협은행", number: "000-000-000000" }
+      { role: "신부", name: "정수연&nbsp; &nbsp; ", bank: "카카오뱅크", number: "3333-08-0560900" },
+      { role: "아버지", name: "정성채&nbsp; &nbsp; ", bank: "신한은행", number: "3333-08-0560900" },
+      { role: "어머니", name: "김민선&nbsp; &nbsp; ", bank: "농협은행", number: "211053-52-338669" }
     ]
   },
 
   // ── 링크 공유 시 나타나는 문구 ──
   meta: {
-    title: "신랑 ♥ 신부 결혼합니다",
-    description: "2025년 1월 1일, 소중한 분들을 초대합니다."
+    title: "강무성 ♥ 정수연 결혼합니다",
+    description: "2026년 9월 19일 18시, 소중한 분들을 초대합니다."
   }
 };
