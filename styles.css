@@ -423,7 +423,7 @@ a {
   z-index: 2;
   text-align: center;
   color: var(--color-white);
-  padding: 0 var(--spacing-md) 80px;
+  padding: 0 var(--spacing-md) 150px;
   width: 100%;
   transform: none;
 }
