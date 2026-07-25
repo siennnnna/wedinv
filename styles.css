@@ -426,7 +426,7 @@ a {
   color: var(--color-white);
   padding: 0 var(--spacing-md) var(--spacing-lg);
   width: 200%;
-transform: translateY(38px); 
+  transform: translateY(120px); 
 }
 
 .hero__label {
@@ -472,10 +472,12 @@ transform: translateY(38px);
 .countdown {
   position: relative;
   z-index: 2;
-  padding: var(--spacing-lg) var(--spacing-md) calc(var(--spacing-lg) + var(--safe-bottom));
+  padding: var(--spacing-xl) var(--spacing-md) calc(var(--spacing-lg) + var(--safe-bottom));
+  transform: translateY(80px);
   text-align: center;
   color: var(--color-white);
 }
+
 
 .countdown__label {
   font-size: 0.75rem;
