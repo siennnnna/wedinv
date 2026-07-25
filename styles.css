@@ -387,7 +387,7 @@ a {
 .hero {
   position: relative;
   height: 100svh;
-  min-height: 650px;
+  min-height: 900px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -470,7 +470,7 @@ a {
 .countdown {
   position: relative;
   z-index: 2;
-  padding: 0 var(--spacing-md) 120px;
+  padding: 0 var(--spacing-md) 250px;
   transform: none;
   text-align: center;
   color: var(--color-white);
