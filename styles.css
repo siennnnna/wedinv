@@ -357,7 +357,8 @@ a {
 }
 
 .section__inner {
-  max-width: 100px;
+  max-width: 480px;
+  width: 100%;
   margin: 0 auto;
   padding: 0 var(--spacing-md);
   text-align: center;
@@ -412,14 +413,13 @@ a {
 
 .hero__photo {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: auto;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
-  transform: translate(-50%, -50%);
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center center;
 }
-
 
 .hero__content {
   position: relative;
@@ -427,8 +427,9 @@ a {
   text-align: center;
   color: var(--color-white);
   padding: 0 var(--spacing-md) var(--spacing-lg);
-  width: 200%;
-transform: translateY(38px); 
+  width: 100%;
+  max-width: 480px;
+  transform: translateY(38px);
 }
 
 .hero__label {
