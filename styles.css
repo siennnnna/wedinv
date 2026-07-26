@@ -381,12 +381,14 @@ a {
 }
 
 /* ═══════════════════════════════════════════
-   Hero Section (사진 비율에 맞춘 완벽 레이아웃)
+   Hero Section (사진 전체 영역 세로 확장 및 위치 조율)
    ═══════════════════════════════════════════ */
 .hero {
   position: relative;
   width: 100%;
-  min-height: auto; /* 화면 높이에 강제로 맞추지 않음 */
+  /* 모바일 화면 높이보다 더 길게 설정하여 사진의 세로 비율을 시원하게 확보 */
+  min-height: 110vh; 
+  min-height: 110dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -397,24 +399,26 @@ a {
 }
 
 .hero__photo {
-  position: relative; /* absolute에서 relative로 변경하여 원본 사진 비율 유지 */
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: auto;
-  display: block;
-  object-fit: contain;
+  height: 100%;
+  /* cover로 전체를 채우되 상단 'We're getting married' 문구부터 인물 위주로 밀착 */
+  object-fit: cover;
+  object-position: center top;
 }
 
-/* 어두운 오버레이를 사진 하단과 텍스트 영역에 자연스럽게 연결 */
 .hero__overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    transparent 50%,
-    rgba(58, 50, 40, 0.7) 70%,
-    rgba(58, 50, 40, 0.95) 88%,
-    #3a3228 100%
+    transparent 40%,
+    rgba(58, 50, 40, 0.45) 60%,
+    rgba(58, 50, 40, 0.85) 82%,
+    rgba(58, 50, 40, 0.98) 100%
   );
   z-index: 1;
   pointer-events: none;
@@ -427,7 +431,7 @@ a {
   color: var(--color-white);
   padding: 0 var(--spacing-md) var(--spacing-xs);
   width: 100%;
-  margin-top: -3.5rem; /* 텍스트를 사진 하단 오버레이 영역으로 살짝 끌어올림 */
+  margin-top: auto;
 }
 
 .hero__label {
@@ -436,7 +440,7 @@ a {
   font-weight: 300;
   letter-spacing: 5px;
   text-transform: uppercase;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.2rem;
   opacity: 0.85;
 }
 
@@ -445,7 +449,7 @@ a {
   font-size: 1.75rem;
   font-weight: 300;
   letter-spacing: 6px;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.2rem;
   line-height: 1.2;
 }
 
@@ -453,7 +457,7 @@ a {
   width: 30px;
   height: 1px;
   background: rgba(255, 255, 255, 0.4);
-  margin: 0.5rem auto;
+  margin: 0.4rem auto;
 }
 
 .hero__date,
@@ -473,7 +477,7 @@ a {
 .countdown {
   position: relative;
   z-index: 2;
-  padding: var(--spacing-md) var(--spacing-md) calc(var(--spacing-lg) + var(--safe-bottom));
+  padding: var(--spacing-sm) var(--spacing-md) calc(var(--spacing-md) + var(--safe-bottom));
   text-align: center;
   color: var(--color-white);
   width: 100%;
@@ -503,7 +507,7 @@ a {
 
 .countdown__number {
   font-family: var(--font-display);
-  font-size: 2rem;
+  font-size: 1.875rem;
   font-weight: 300;
   line-height: 1;
   letter-spacing: 2px;
@@ -519,11 +523,12 @@ a {
 
 .countdown__sep {
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: 1.375rem;
   font-weight: 300;
   opacity: 0.4;
-  margin-top: -1rem;
+  margin-top: -0.875rem;
 }
+
 
 /* ═══════════════════════════════════════════
    Greeting Section
