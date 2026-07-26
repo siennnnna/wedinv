@@ -427,7 +427,7 @@ a {
   z-index: 2;
   text-align: center;
   color: var(--color-white);
-  padding: 0 var(--spacing-md) 250px;
+  padding: 0 var(--spacing-md)400px;
   width: 100%;
   transform: none;
 }
