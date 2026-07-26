@@ -386,7 +386,7 @@ a {
 .hero {
   position: relative;
   min-height: 100vh;
-  min-height: 720dvh;
+  min-height: 100dvh; /* 720dvh 오타 수정 */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -416,8 +416,8 @@ a {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center center;
+  object-fit: contain; /* cover 대신 contain을 사용하거나 아래처럼 contain/cover 선택 */
+  object-position: center top; /* 인물 위주로 맞춤 */
 }
 
 .hero__content {
@@ -426,9 +426,10 @@ a {
   text-align: center;
   color: var(--color-white);
   padding: 0 var(--spacing-md) var(--spacing-lg);
-  width: 200%;
-transform: translateY(38px); 
+  width: 100%; /* 200% 오타 수정 */
+  transform: translateY(0); /* 오프셋 정상화 */
 }
+
 
 .hero__label {
   font-family: var(--font-display);
