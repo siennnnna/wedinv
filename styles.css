@@ -428,7 +428,6 @@ a {
   text-align: center;
   color: var(--color-white);
   padding: 0 var(--spacing-md)400px;
-  width: 100%;
   transform: none;
 }
 .hero__label {
@@ -474,7 +473,7 @@ a {
 .countdown {
   position: relative;
   z-index: 2;
-  padding: 0 var(--spacing-md) 350px;
+  padding: 0 var(--spacing-md)500px;
   transform: none;
   text-align: center;
   color: var(--color-white);
