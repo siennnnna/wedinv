@@ -381,14 +381,15 @@ a {
 }
 
 /* ═══════════════════════════════════════════
-   Hero Section (사진 전체 영역 세로 확장 및 위치 조율)
+   Hero Section (사파리 / 카톡 동일 비율 보장)
    ═══════════════════════════════════════════ */
 .hero {
   position: relative;
   width: 100%;
-  /* 모바일 화면 높이보다 더 길게 설정하여 사진의 세로 비율을 시원하게 확보 */
-  min-height: 110vh; 
-  min-height: 110dvh;
+  /* vh 단위 대신 뷰포트 기반 세로 비율(aspect-ratio)을 활용해 브라우저 주소창 영향 차단 */
+  aspect-ratio: 9 / 16; 
+  max-height: 850px;
+  min-height: 680px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -404,9 +405,8 @@ a {
   left: 0;
   width: 100%;
   height: 100%;
-  /* cover로 전체를 채우되 상단 'We're getting married' 문구부터 인물 위주로 밀착 */
   object-fit: cover;
-  object-position: center top;
+  object-position: center top; /* 상단 인물 얼굴 기준 고정 */
 }
 
 .hero__overlay {
@@ -415,10 +415,10 @@ a {
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    transparent 40%,
-    rgba(58, 50, 40, 0.45) 60%,
-    rgba(58, 50, 40, 0.85) 82%,
-    rgba(58, 50, 40, 0.98) 100%
+    transparent 35%,
+    rgba(58, 50, 40, 0.45) 55%,
+    rgba(58, 50, 40, 0.8) 80%,
+    rgba(58, 50, 40, 0.95) 100%
   );
   z-index: 1;
   pointer-events: none;
