@@ -381,12 +381,12 @@ a {
 }
 
 /* ═══════════════════════════════════════════
-   Hero Section
+   Hero Section (세로 비율 확장 및 텍스트 위치 하단 이동)
    ═══════════════════════════════════════════ */
 .hero {
   position: relative;
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 125vh; /* 기존 100vh에서 125vh로 늘려 사진과 하단 영역을 세로로 길게 확보 */
+  min-height: 125dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -403,9 +403,9 @@ a {
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    transparent 35%,
-    rgba(58, 50, 40, 0.45) 55%,
-    rgba(58, 50, 40, 0.8) 80%,
+    transparent 45%,
+    rgba(58, 50, 40, 0.5) 65%,
+    rgba(58, 50, 40, 0.85) 85%,
     rgba(58, 50, 40, 0.95) 100%
   );
   z-index: 1;
@@ -418,7 +418,7 @@ a {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: center top; /* 인물 및 상단 'We're getting married' 문구가 잘 보이도록 고정 */
 }
 
 .hero__content {
@@ -426,19 +426,18 @@ a {
   z-index: 2;
   text-align: center;
   color: var(--color-white);
-  padding: var(--spacing-md) var(--spacing-md) var(--spacing-xs);
+  padding: 0 var(--spacing-md) var(--spacing-xs);
   width: 100%;
-  transform: none;
   margin-top: auto;
 }
 
 .hero__label {
   font-family: var(--font-display);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 300;
-  letter-spacing: 6px;
+  letter-spacing: 5px;
   text-transform: uppercase;
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
   opacity: 0.85;
 }
 
@@ -447,15 +446,15 @@ a {
   font-size: 1.75rem;
   font-weight: 300;
   letter-spacing: 6px;
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
   line-height: 1.2;
 }
 
 .hero__divider {
-  width: 40px;
+  width: 30px;
   height: 1px;
-  background: rgba(255, 255, 255, 0.5);
-  margin: 0 auto var(--spacing-md);
+  background: rgba(255, 255, 255, 0.4);
+  margin: 0.5rem auto;
 }
 
 .hero__date,
@@ -464,18 +463,18 @@ a {
   font-weight: 300;
   letter-spacing: 1px;
   opacity: 0.9;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .hero__venue {
-  margin-top: 0.25rem;
+  margin-top: 0.15rem;
 }
 
 /* ─── Countdown ─── */
 .countdown {
   position: relative;
   z-index: 2;
-  padding: var(--spacing-lg) var(--spacing-md) calc(var(--spacing-lg) + var(--safe-bottom));
+  padding: var(--spacing-md) var(--spacing-md) calc(var(--spacing-lg) + var(--safe-bottom));
   text-align: center;
   color: var(--color-white);
 }
@@ -485,7 +484,7 @@ a {
   font-weight: 300;
   letter-spacing: 3px;
   opacity: 0.7;
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
 }
 
 .countdown__timer {
@@ -525,8 +524,6 @@ a {
   opacity: 0.4;
   margin-top: -1rem;
 }
-
-
 
 /* ═══════════════════════════════════════════
    Greeting Section
