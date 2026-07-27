@@ -80,10 +80,20 @@ body.no-scroll {
   width: 100%;
 }
 
+/* 기존 img 스타일에 유저 선택 및 드래그 방지 추가 */
 img {
   display: block;
-  max-width: 50;
+  max-width: 100%; /* (참고: 기존에 50으로 되어있던 부분을 100%로 수정 권장) */
   height: auto;
+  
+  /* 터치 메뉴 및 선택 방지 */
+  -webkit-touch-callout: none; /* iOS Safari에서 길게 누를 때 팝업 차단 */
+  -webkit-user-select: none;   /* Safari */
+  -khtml-user-select: none;
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* IE/Edge */
+  user-select: none;           /* 본문 텍스트 선택 방지 */
+  -webkit-user-drag: none;     /* 이미지 드래그 방지 */
 }
 
 button {
@@ -1165,4 +1175,15 @@ a {
     opacity: 1 !important;
     transform: none !important;
   }
+}
+
+
+
+/* 이미지 우클릭/길게 누르기 메뉴 차단 레이어 */
+.story__photo-item,
+.gallery__item,
+.photo-modal__img {
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
 }
