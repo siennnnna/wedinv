@@ -911,36 +911,17 @@ function handleSwipe() {
     init();
   }
 })();
-
 /* ═══════════════════════════════════════════
-   카카오톡 이미지 저장 차단 & 클릭 정상화
+   안전한 롱터치(꾹 누르기) 저장 팝업 차단
    ═══════════════════════════════════════════ */
 
-/* 1. 이미지에 롱터치(꾹 누르기) 팝업만 직접 차단 */
-.hero__photo,
-.story__photo-item img,
-.gallery__item img,
-.photo-modal__img {
-  -webkit-touch-callout: none !important; /* iOS/카톡 롱터치 팝업 차단 */
+/* 모든 이미지에 팝업 억제 속성 부여 (클릭 방해 X) */
+img {
+  -webkit-touch-callout: none !important; /* iOS/카카오톡 롱터치 메뉴 차단 */
   -webkit-user-select: none !important;   /* 선택 방지 */
-  user-select: none !important;
-  -webkit-user-drag: none !important;   /* 드래그 방지 */
-}
-
-/* 2. 부모 상자에 투명 커버를 씌워서 손가락 터치가 이미지에 직접 닿지 않게 함 */
-.story__photo-item,
-.gallery__item {
-  position: relative;
-}
-
-.story__photo-item::after,
-.gallery__item::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  background: rgba(0, 0, 0, 0); /* 투명 막 */
+  -khtml-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;           /* 텍스트/이미지 블록 지정 방지 */
+  -webkit-user-drag: none !important;     /* 드래그 방지 */
 }
