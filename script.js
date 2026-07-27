@@ -913,46 +913,34 @@ function handleSwipe() {
 })();
 
 /* ═══════════════════════════════════════════
-   카카오톡 인앱 브라우저 이미지 저장 팝업 완벽 차단
+   카카오톡 이미지 저장 차단 & 클릭 정상화
    ═══════════════════════════════════════════ */
 
-/* 1. 모든 이미지 태그의 터치/포인터 반응을 완전히 꺼버림 (카카오톡 팝업 감지 불가) */
+/* 1. 이미지에 롱터치(꾹 누르기) 팝업만 직접 차단 */
 .hero__photo,
 .story__photo-item img,
 .gallery__item img,
-.photo-modal__img,
-.location__map-img {
-  pointer-events: none !important;
-  -webkit-touch-callout: none !important;
-  -webkit-user-select: none !important;
+.photo-modal__img {
+  -webkit-touch-callout: none !important; /* iOS/카톡 롱터치 팝업 차단 */
+  -webkit-user-select: none !important;   /* 선택 방지 */
   user-select: none !important;
+  -webkit-user-drag: none !important;   /* 드래그 방지 */
 }
 
-/* 2. 이미지 부모 요소들의 위치 기준 잡기 */
+/* 2. 부모 상자에 투명 커버를 씌워서 손가락 터치가 이미지에 직접 닿지 않게 함 */
 .story__photo-item,
-.gallery__item,
-.photo-modal__container {
+.gallery__item {
   position: relative;
 }
 
-/* 3. 이미지 위에 투명 방어막(가상 레이어)을 씌워 클릭/터치를 대신 받음 */
 .story__photo-item::after,
 .gallery__item::after {
   content: '';
   position: absolute;
-  inset: 0;
-  z-index: 10;
-  background: transparent;
-  cursor: pointer;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0); /* 투명 막 */
 }
-
-/* 4. 모달 확대창 이미지 방어막 */
-.photo-modal__container::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: transparent;
-  pointer-events: auto;
-}
-
