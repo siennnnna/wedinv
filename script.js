@@ -82,13 +82,8 @@ body.no-scroll {
 
 img {
   display: block;
-  max-width: 100%;
+  max-width: 50;
   height: auto;
-  /* 이미지 꾹 누르기/드래그 방지 */
-  -webkit-touch-callout: none !important;
-  -webkit-user-select: none !important;
-  user-select: none !important;
-  -webkit-user-drag: none !important;
 }
 
 button {
@@ -167,7 +162,7 @@ a {
 
 .curtain__content {
   position: relative;
-  z-index: 10000;
+  z-index: 1;
   text-align: center;
   color: var(--color-white);
   transition: opacity 0.5s ease, transform 0.5s ease;
@@ -192,8 +187,6 @@ a {
 }
 
 .curtain__btn {
-  position: relative;
-  z-index: 10001;
   display: inline-block;
   padding: 0.875rem 2.5rem;
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -205,7 +198,6 @@ a {
   background: transparent;
   transition: var(--transition);
   cursor: pointer;
-  pointer-events: auto !important;
 }
 
 .curtain__btn:hover,
@@ -389,11 +381,12 @@ a {
 }
 
 /* ═══════════════════════════════════════════
-   Hero Section
+   Hero Section (사파리 / 카톡 동일 비율 보장)
    ═══════════════════════════════════════════ */
 .hero {
   position: relative;
   width: 100%;
+  /* vh 단위 대신 뷰포트 기반 세로 비율(aspect-ratio)을 활용해 브라우저 주소창 영향 차단 */
   aspect-ratio: 9 / 16; 
   max-height: 850px;
   min-height: 680px;
@@ -413,7 +406,7 @@ a {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: center top; /* 상단 인물 얼굴 기준 고정 */
 }
 
 .hero__overlay {
@@ -535,6 +528,7 @@ a {
   opacity: 0.4;
   margin-top: -0.875rem;
 }
+
 
 /* ═══════════════════════════════════════════
    Greeting Section
@@ -707,7 +701,7 @@ a {
 }
 
 .story__photo-item:hover img {
-  transform: scale(1.05);
+  transform: scale(1.3);
 }
 
 /* ═══════════════════════════════════════════
@@ -1152,7 +1146,7 @@ a {
 }
 
 /* ═══════════════════════════════════════════
-   Print
+   Print (hide interactive elements)
    ═══════════════════════════════════════════ */
 @media print {
   .curtain,
