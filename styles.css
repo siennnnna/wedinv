@@ -1218,3 +1218,14 @@ a {
   position: relative;
   z-index: 0;
 }
+
+
+/* 카카오톡 강제 팝업 방지 */
+.hero__photo,
+.story__photo-item img,
+.gallery__item img,
+.photo-modal__img {
+  pointer-events: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+}
