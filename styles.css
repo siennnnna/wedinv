@@ -1187,3 +1187,34 @@ a {
   -webkit-user-select: none !important;
   user-select: none !important;
 }
+
+/* 이미지 패러런츠 요소 포지션 설정 */
+.story__photo-item,
+.gallery__item,
+.photo-modal__container {
+  position: relative;
+}
+
+/* 이미지 위에 투명 방어막(가상 요소) 씌우기 */
+.story__photo-item::after,
+.gallery__item::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0); /* 완전 투명 */
+}
+
+/* 모달 내부 큰 이미지 차단 */
+.photo-modal__container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1; /* 이미지보다 위에 배치 */
+  background: rgba(0, 0, 0, 0);
+}
+
+.photo-modal__img {
+  position: relative;
+  z-index: 0;
+}
