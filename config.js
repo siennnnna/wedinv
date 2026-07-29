@@ -5,16 +5,16 @@
  * 이미지는 설정이 필요 없습니다. 아래 폴더에 순번 파일명으로 넣으면 자동 감지됩니다.
  *
  * 이미지 폴더 구조 (파일명 규칙):
- *   images/hero/1.jpg      - 메인 사진 (1장, 필수)
- *   images/story/1.jpg, 2.jpg, ...  - 스토리 사진들 (순번, 자동 감지)
- *   images/gallery/1.jpg, 2.jpg, ... - 갤러리 사진들 (순번, 자동 감지)
- *   images/location/1.jpg  - 약도/지도 이미지 (1장)
- *   images/og/1.jpg        - 카카오톡 공유 썸네일 (1장)
+ * images/hero/1.jpg      - 메인 사진 (1장, 필수)
+ * images/story/1.jpg, 2.jpg, ...  - 스토리 사진들 (순번, 자동 감지)
+ * images/gallery/1.jpg, 2.jpg, ... - 갤러리 사진들 (순번, 자동 감지)
+ * images/location/1.jpg  - 약도/지도 이미지 (1장)
+ * images/og/1.jpg        - 카카오톡 공유 썸네일 (1장)
  */
 
 const CONFIG = {
   // ── 초대장 열기 ──
-  useCurtain: false,  // 초대장 열기 화면 사용 여부 (true: 사용, false: 바로 본문 표시)
+  useCurtain: true,  // 초대장 열기 화면 사용 여부 (true: 사용, false: 바로 본문 표시)
 
   // ── 메인 (히어로) ──
   groom: {
@@ -68,9 +68,8 @@ const CONFIG = {
     groom: [
       { role: "신랑", name: "강무성&nbsp; &nbsp; ", bank: "국민은행", number: "657801-01-493316" },
       { role: "아버지", name: "강신창&nbsp; &nbsp; ", bank: "국민은행", number: "657825-87-036434" },
-      { role: "아버지", name: "강신창&nbsp; &nbsp; ", bank: "국민은행", number: "657825-87-036434" },
-
-     
+      { role: "아버지", name: "강신창&nbsp; &nbsp; ", bank: "국민은행", number: "657825-87-036434" }
+    ],
     bride: [
       { role: "신부", name: "정수연&nbsp; &nbsp; ", bank: "카카오뱅크", number: "3333-08-0560900" },
       { role: "아버지", name: "정성채&nbsp; &nbsp; ", bank: "우리은행", number: "1002-145-856083" },
