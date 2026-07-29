@@ -38,32 +38,32 @@
 
   function loadImagesFromFolder(folder, maxAttempts = 50) {
     return new Promise(resolve => {
-        const images = [];
-        let current = 1;
-        let consecutiveFails = 0;
+      const images = [];
+      let current = 1;
+      let consecutiveFails = 0;
 
-        function tryNext() {
-            if (current > maxAttempts || consecutiveFails >= 3) {
-                resolve(images);
-                return;
-            }
-            const img = new Image();
-            const path = `images/${folder}/${current}.jpg`;
-            img.onload = function() {
-                images.push(path);
-                consecutiveFails = 0;
-                current++;
-                tryNext();
-            };
-            img.onerror = function() {
-                consecutiveFails++;
-                current++;
-                tryNext();
-            };
-            img.src = path;
+      function tryNext() {
+        if (current > maxAttempts || consecutiveFails >= 3) {
+          resolve(images);
+          return;
         }
+        const img = new Image();
+        const path = `images/${folder}/${current}.jpg`;
+        img.onload = function() {
+          images.push(path);
+          consecutiveFails = 0;
+          current++;
+          tryNext();
+        };
+        img.onerror = function() {
+          consecutiveFails++;
+          current++;
+          tryNext();
+        };
+        img.src = path;
+      }
 
-        tryNext();
+      tryNext();
     });
   }
 
@@ -130,7 +130,6 @@
     const btn = $('#curtainBtn');
     const namesEl = $('#curtainNames');
 
-    // If useCurtain is false, skip the curtain entirely
     if (CONFIG.useCurtain === false) {
       curtain.style.display = 'none';
       initPetals();
@@ -206,7 +205,6 @@
         ctx.globalAlpha = this.opacity;
         ctx.fillStyle = '#e8c8b0';
         ctx.beginPath();
-        // Petal shape
         ctx.moveTo(0, 0);
         ctx.bezierCurveTo(
           this.size * 0.3, -this.size * 0.4,
@@ -335,12 +333,10 @@
 
     const grid = $('#calendarGrid');
 
-    // Header
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December'];
     grid.innerHTML = `<div class="calendar__header">${monthNames[month]} ${year}</div>`;
 
-    // Weekdays
     const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
     const wdRow = document.createElement('div');
     wdRow.className = 'calendar__weekdays';
@@ -352,7 +348,6 @@
     });
     grid.appendChild(wdRow);
 
-    // Days
     const daysContainer = document.createElement('div');
     daysContainer.className = 'calendar__days';
 
@@ -375,14 +370,12 @@
 
     grid.appendChild(daysContainer);
 
-    // Google Calendar link
     const startDate = dt.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
     const endDt = new Date(dt.getTime() + 2 * 60 * 60 * 1000);
     const endDate = endDt.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
     const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(CONFIG.groom.name + ' ♥ ' + CONFIG.bride.name + ' 결혼식')}&dates=${startDate}/${endDate}&location=${encodeURIComponent(CONFIG.wedding.venue + ' ' + CONFIG.wedding.address)}&details=${encodeURIComponent('결혼식에 초대합니다.')}`;
     $('#googleCalBtn').href = gcalUrl;
 
-    // ICS download
     $('#icsDownloadBtn').addEventListener('click', () => {
       const icsContent = [
         'BEGIN:VCALENDAR',
@@ -418,7 +411,6 @@
     $('#storyContent').textContent = CONFIG.story.content;
 
     const container = $('#storyPhotos');
-    // Remove loading placeholder if present
     const placeholder = container.querySelector('.loading-placeholder');
     if (placeholder) placeholder.remove();
 
@@ -440,12 +432,10 @@
 
   function initGallery(galleryImages) {
     const grid = $('#galleryGrid');
-    // Remove loading placeholder if present
     const placeholder = grid.querySelector('.loading-placeholder');
     if (placeholder) placeholder.remove();
 
     if (galleryImages.length === 0) {
-      // Hide gallery section if no images found
       const gallerySection = $('#gallery');
       if (gallerySection) gallerySection.style.display = 'none';
       return;
@@ -514,7 +504,6 @@
       }
     });
 
-    // Keyboard navigation
     document.addEventListener('keydown', (e) => {
       if (!modal.classList.contains('is-open')) return;
       if (e.key === 'Escape') closePhotoModal();
@@ -522,7 +511,6 @@
       if (e.key === 'ArrowRight') modalNavigate(1);
     });
 
-    // Swipe support
     const container = $('#modalContainer');
 
     container.addEventListener('touchstart', (e) => {
@@ -545,9 +533,9 @@
     if (Math.abs(diffX) < minSwipe || Math.abs(diffX) < Math.abs(diffY)) return;
 
     if (diffX > 0) {
-      modalNavigate(1); // swipe left -> next
+      modalNavigate(1);
     } else {
-      modalNavigate(-1); // swipe right -> prev
+      modalNavigate(-1);
     }
   }
 
@@ -595,6 +583,7 @@
     });
   }
 
+  /* 수정: 아코디언 높이 짤림 및 애니메이션 개선 */
   function initAccordion(triggerId, panelId) {
     const trigger = $(`#${triggerId}`);
     const panel = $(`#${panelId}`);
@@ -605,7 +594,14 @@
 
       if (!expanded) {
         panel.style.maxHeight = panel.scrollHeight + 'px';
+        setTimeout(() => {
+          if (trigger.getAttribute('aria-expanded') === 'true') {
+            panel.style.maxHeight = 'none';
+          }
+        }, 400);
       } else {
+        panel.style.maxHeight = panel.scrollHeight + 'px';
+        panel.offsetHeight; // force reflow
         panel.style.maxHeight = '0';
       }
     });
@@ -618,7 +614,6 @@
     initAccordion('groomAccordion', 'groomAccordionPanel');
     initAccordion('brideAccordion', 'brideAccordionPanel');
 
-    // Copy account delegates
     document.addEventListener('click', (e) => {
       const btn = e.target.closest('.account-item__copy');
       if (!btn) return;
@@ -673,10 +668,8 @@
       }
     );
 
-    // Observe initial static items
     $$('.animate-item').forEach((el) => observer.observe(el));
 
-    // Re-observe after dynamic content is added (MutationObserver)
     const mutObs = new MutationObserver((mutations) => {
       mutations.forEach((m) => {
         m.addedNodes.forEach((node) => {
@@ -706,27 +699,22 @@
     initGreeting();
     initCalendar();
 
-    // Show loading placeholders while detecting images
     showLoadingPlaceholders();
 
-    // Init sections that don't depend on image detection
     initPhotoModal();
     initLocation();
     initAccounts();
     initFooter();
     initScrollAnimations();
 
-    // Set story text immediately (photos load async)
     $('#storyTitle').textContent = CONFIG.story.title;
     $('#storyContent').textContent = CONFIG.story.content;
 
-    // Auto-detect story and gallery images in parallel
     const [storyImages, galleryImages] = await Promise.all([
       loadImagesFromFolder('story'),
       loadImagesFromFolder('gallery')
     ]);
 
-    // Render sections with discovered images
     initStory(storyImages);
     initGallery(galleryImages);
   }
