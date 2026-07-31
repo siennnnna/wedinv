@@ -78,8 +78,7 @@ body {
 
 body.no-scroll {
   overflow: hidden;
-  position: fixed;
-  width: 100%;
+  touch-action: none; /* 모바일에서 팝업 뒤 배경이 스크롤되는 현상 방지 */
 }
 
 /* 3번 요청: 이미지 꾹 누르기, 드래그, 팝업 차단 */
