@@ -1,65 +1,287 @@
-/* ═══════════════════════════════════════════
-   Classic Elegant Wedding Invitation
-   Korean Mobile 청첩장 - Styles
-   ═══════════════════════════════════════════ */
-
-/* ─── CSS Variables ─── */
-:root {
-  --color-bg: #faf8f5;
-  --color-bg-warm: #f5f0ea;
-  --color-bg-card: #ffffff;
-  --color-text: #3a3228;
-  --color-text-light: #7a7068;
-  --color-text-muted: #a09890;
-  --color-accent: #b8956a;
-  --color-accent-light: #d4b896;
-  --color-accent-dark: #96764e;
-  --color-border: #e8e0d8;
-  --color-divider: #d8cfc5;
-  --color-overlay: rgba(58, 50, 40, 0.6);
-  --color-kakao: #fee500;
-  --color-naver: #03c75a;
-  --color-white: #ffffff;
-  --color-toast-bg: rgba(58, 50, 40, 0.9);
-
-  --font-serif: 'Noto Serif KR', 'Georgia', serif;
-  --font-display: 'Cormorant Garamond', 'Noto Serif KR', serif;
-
-  --spacing-xs: 0.5rem;
-  --spacing-sm: 1rem;
-  --spacing-md: 1.5rem;
-  --spacing-lg: 2.5rem;
-  --spacing-xl: 4rem;
-  --spacing-2xl: 6rem;
-
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 16px;
-
-  --transition: 0.3s ease;
-  --transition-slow: 0.6s ease;
-
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-left: env(safe-area-inset-left, 0px);
-  --safe-right: env(safe-area-inset-right, 0px);
-}
-
-/* ─── Reset & Base ─── */
-*,
-*::before,
-*::after {
+/* ==================================================
+ * 1. 기본 리셋 및 폰트 설정
+ * ================================================== */
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
-html {
-  font-size: 16px;
-  -webkit-text-size-adjust: 100%;
-  scroll-behavior: smooth;
+body {
+  font-family: 'Noto Serif KR', serif;
+  color: #4a4a4a;
+  background-color: #faf8f5;
+  line-height: 1.6;
+  word-break: keep-all;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
+/* ==================================================
+ * 2. 커튼 레이어
+ * ================================================== */
+.curtain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+.curtain__left,
+.curtain__right {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  background-color: #f7f3ee;
+  transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
+  z-index: 1;
+}
+
+.curtain__left { left: 0; }
+.curtain__right { right: 0; }
+
+.curtain__content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #6b5e52;
+  transition: opacity 0.5s ease;
+}
+
+.curtain__subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.curtain__names {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+
+.curtain__btn {
+  padding: 12px 28px;
+  border: 1px solid #6b5e52;
+  background: transparent;
+  color: #6b5e52;
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.curtain--open .curtain__left { transform: translateX(-100%); }
+.curtain--open .curtain__right { transform: translateX(100%); }
+.curtain--open .curtain__content { opacity: 0; }
+
+/* ==================================================
+ * 3. 벚꽃 캔버스 및 배경
+ * ================================================== */
+.petal-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ==================================================
+ * 4. 레이아웃 공통
+ * ================================================== */
+.main-content {
+  max-width: 480px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.03);
+}
+
+.section {
+  padding: 60px 24px;
+  text-align: center;
+}
+
+.section__inner {
+  max-width: 100%;
+}
+
+.section__title {
+  font-family: 'Cormorant Garamond', 'Noto Serif KR', serif;
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: #8b7355;
+  margin-bottom: 28px;
+  letter-spacing: 1px;
+}
+
+.ornament {
+  color: #d4c5b9;
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+}
+
+/* ==================================================
+ * 5. Hero (메인 사진) 섹션
+ * ================================================== */
+.hero {
+  position: relative;
+  padding: 0 0 40px 0;
+}
+
+.hero__photo {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.hero__content {
+  padding: 32px 20px 20px 20px;
+}
+
+.hero__label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  color: #a39385;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+.hero__names {
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: #333333;
+}
+
+.hero__divider {
+  width: 30px;
+  height: 1px;
+  background-color: #d4c5b9;
+  margin: 16px auto;
+}
+
+.hero__date, .hero__venue {
+  font-size: 0.95rem;
+  color: #666666;
+  line-height: 1.5;
+}
+
+/* 카운트다운 */
+.countdown {
+  margin-top: 24px;
+  padding: 20px 16px;
+  background-color: #faf7f2;
+  border-radius: 12px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.countdown__label {
+  font-size: 0.85rem;
+  color: #8c7b6c;
+  margin-bottom: 12px;
+}
+
+.countdown__timer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.countdown__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.countdown__number {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #5c4d42;
+}
+
+.countdown__unit {
+  font-size: 0.75rem;
+  color: #999;
+}
+
+.countdown__sep {
+  font-size: 1.1rem;
+  color: #bbb;
+  margin-bottom: 12px;
+}
+
+/* ==================================================
+ * 6. 달력 섹션
+ * ================================================== */
+.calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+}
+
+.calendar-table caption {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.calendar-table th {
+  padding: 8px;
+  font-size: 0.85rem;
+  color: #888;
+  font-weight: normal;
+}
+
+.calendar-table td {
+  padding: 10px 0;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.calendar-table td span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.calendar__day--target span {
+  background-color: #a88d77;
+  color: #ffffff !important;
+  font-weight: bold;
+}
+
+.calendar-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* ==================================================
+ * 7. 스토리 섹션 (달력 폭에 맞춘 축소 디자인)
+ * ================================================== */
+.story__text {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #555;
 body {
   font-family: var(--font-serif);
   color: var(--color-text);
