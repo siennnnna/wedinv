@@ -1,16 +1,11 @@
-document.addEventListener('DOMContentLoaded', () => {
-  // CONFIG 데이터 확인
-  const CONFIG = window.CONFIG || window.config || {};
+document.addEventListener('DOMContentLoaded', function () {
+  var CONFIG = window.CONFIG || window.config || {};
 
-  // --------------------------------------------------
-  // 1. 우클릭 및 이미지 드래그 방지 (추가 보호)
-  // --------------------------------------------------
-  document.addEventListener('contextmenu', (e) => e.preventDefault());
-  document.addEventListener('dragstart', (e) => e.preventDefault());
+  // 1. 우클릭 및 이미지 드래그 방지
+  document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  document.addEventListener('dragstart', function (e) { e.preventDefault(); });
 
-  // --------------------------------------------------
-  // 2. 초기 데이터 렌더링 (중복 방지 innerHTML = '' 적용)
-  // --------------------------------------------------
+  // 2. 초기 데이터 렌더링
   initCurtain();
   initHero();
   initGreeting();
@@ -21,225 +16,209 @@ document.addEventListener('DOMContentLoaded', () => {
   initAccount();
   initFooter();
 
-  // --------------------------------------------------
-  // 3. 기능별 모듈 초기화
-  // --------------------------------------------------
+  // 3. 기능 초기화
   initCountdown();
   initPetalCanvas();
   initModal();
   initAccordion();
   initScrollAnimation();
 
-  // ==================================================
-  // 렌더링 함수 정의
-  // ==================================================
-
-  // [커튼 레이어]
+  // ----- 렌더링 함수 -----
   function initCurtain() {
-    const curtainNames = document.getElementById('curtainNames');
-    const curtainBtn = document.getElementById('curtainBtn');
-    const curtain = document.getElementById('curtain');
+    var curtainNames = document.getElementById('curtainNames');
+    var curtainBtn = document.getElementById('curtainBtn');
+    var curtain = document.getElementById('curtain');
 
     if (curtainNames && CONFIG.hero) {
-      curtainNames.textContent = `${CONFIG.hero.groomName} & ${CONFIG.hero.brideName}`;
+      curtainNames.textContent = CONFIG.hero.groomName + ' & ' + CONFIG.hero.brideName;
     }
 
     if (curtainBtn && curtain) {
-      curtainBtn.addEventListener('click', () => {
+      curtainBtn.addEventListener('click', function () {
         curtain.classList.add('curtain--open');
-        setTimeout(() => {
-          curtain.style.display = 'none';
-        }, 1000);
+        setTimeout(function () { curtain.style.display = 'none'; }, 1000);
       });
     }
   }
 
-  // [메인 히어로 섹션]
   function initHero() {
     if (!CONFIG.hero) return;
-
-    const heroPhoto = document.getElementById('heroPhoto');
-    const heroNames = document.getElementById('heroNames');
-    const heroDate = document.getElementById('heroDate');
-    const heroVenue = document.getElementById('heroVenue');
+    var heroPhoto = document.getElementById('heroPhoto');
+    var heroNames = document.getElementById('heroNames');
+    var heroDate = document.getElementById('heroDate');
+    var heroVenue = document.getElementById('heroVenue');
 
     if (heroPhoto && CONFIG.hero.mainPhoto) heroPhoto.src = CONFIG.hero.mainPhoto;
-    if (heroNames) heroNames.textContent = `${CONFIG.hero.groomName}  |  ${CONFIG.hero.brideName}`;
+    if (heroNames) heroNames.textContent = CONFIG.hero.groomName + '  |  ' + CONFIG.hero.brideName;
     if (heroDate) heroDate.textContent = CONFIG.hero.dateText || '';
     if (heroVenue) heroVenue.textContent = CONFIG.hero.venueText || '';
   }
 
-  // [모시는 글 섹션]
   function initGreeting() {
     if (!CONFIG.greeting) return;
-
-    const title = document.getElementById('greetingTitle');
-    const content = document.getElementById('greetingContent');
-    const parents = document.getElementById('greetingParents');
+    var title = document.getElementById('greetingTitle');
+    var content = document.getElementById('greetingContent');
+    var parents = document.getElementById('greetingParents');
 
     if (title) title.textContent = CONFIG.greeting.title || '모시는 글';
     if (content) content.innerHTML = (CONFIG.greeting.content || '').replace(/\n/g, '<br>');
     if (parents && CONFIG.greeting.parents) {
-      parents.innerHTML = CONFIG.greeting.parents.map(p => `<p>${p}</p>`).join('');
+      parents.innerHTML = CONFIG.greeting.parents.map(function (p) { return '<p>' + p + '</p>'; }).join('');
     }
   }
 
-  // [달력 섹션]
   function initCalendar() {
-    const calendarGrid = document.getElementById('calendarGrid');
+    var calendarGrid = document.getElementById('calendarGrid');
     if (!calendarGrid || !CONFIG.weddingDate) return;
 
-    calendarGrid.innerHTML = ''; // 중복 방지
+    calendarGrid.innerHTML = '';
 
-    const weddingDate = new Date(CONFIG.weddingDate);
-    const year = weddingDate.getFullYear();
-    const month = weddingDate.getMonth();
-    const targetDay = weddingDate.getDate();
+    var weddingDate = new Date(CONFIG.weddingDate);
+    var year = weddingDate.getFullYear();
+    var month = weddingDate.getMonth();
+    var targetDay = weddingDate.getDate();
 
-    const firstDay = new Date(year, month, 1).getDay();
-    const lastDate = new Date(year, month + 1, 0).getDate();
+    var firstDay = new Date(year, month, 1).getDay();
+    var lastDate = new Date(year, month + 1, 0).getDate();
 
-    const table = document.createElement('table');
+    var table = document.createElement('table');
     table.className = 'calendar-table';
 
-    let html = `<caption>${year}년 ${month + 1}월</caption>`;
+    var html = '<caption>' + year + '년 ' + (month + 1) + '월</caption>';
     html += '<thead><tr><th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th></tr></thead><tbody><tr>';
 
-    for (let i = 0; i < firstDay; i++) {
+    for (var i = 0; i < firstDay; i++) {
       html += '<td></td>';
     }
 
-    for (let day = 1; day <= lastDate; day++) {
-      const currentDay = (firstDay + day - 1) % 7;
+    for (var day = 1; day <= lastDate; day++) {
+      var currentDay = (firstDay + day - 1) % 7;
       if (currentDay === 0 && day !== 1) html += '</tr><tr>';
 
-      const isTarget = day === targetDay ? 'class="calendar__day--target"' : '';
-      html += `<td ${isTarget}><span>${day}</span></td>`;
+      var isTarget = day === targetDay ? 'class="calendar__day--target"' : '';
+      html += '<td ' + isTarget + '><span>' + day + '</span></td>';
     }
 
     html += '</tr></tbody>';
     table.innerHTML = html;
     calendarGrid.appendChild(table);
 
-    // 구글/애플 캘린더 링크 설정
-    const googleBtn = document.getElementById('googleCalBtn');
-    if (googleBtn && CONFIG.calendarLinks?.google) {
+    var googleBtn = document.getElementById('googleCalBtn');
+    if (googleBtn && CONFIG.calendarLinks && CONFIG.calendarLinks.google) {
       googleBtn.href = CONFIG.calendarLinks.google;
     }
   }
 
-  // [스토리 섹션]
   function initStory() {
     if (!CONFIG.story) return;
-
-    const title = document.getElementById('storyTitle');
-    const content = document.getElementById('storyContent');
-    const photosContainer = document.getElementById('storyPhotos');
+    var title = document.getElementById('storyTitle');
+    var content = document.getElementById('storyContent');
+    var photosContainer = document.getElementById('storyPhotos');
 
     if (title) title.textContent = CONFIG.story.title || '우리의 이야기';
     if (content) content.innerHTML = (CONFIG.story.content || '').replace(/\n/g, '<br>');
 
     if (photosContainer && Array.isArray(CONFIG.story.photos)) {
-      photosContainer.innerHTML = ''; // 중복 방지
-      CONFIG.story.photos.forEach((src, idx) => {
-        const img = document.createElement('img');
+      photosContainer.innerHTML = '';
+      CONFIG.story.photos.slice(0, 4).forEach(function (src, idx) {
+        var wrapper = document.createElement('div');
+        wrapper.className = 'story__photo-wrapper';
+
+        var img = document.createElement('img');
         img.src = src;
-        img.alt = `스토리 사진 ${idx + 1}`;
+        img.alt = '스토리 사진 ' + (idx + 1);
         img.draggable = false;
         img.loading = 'lazy';
-        photosContainer.appendChild(img);
+
+        wrapper.appendChild(img);
+        photosContainer.appendChild(wrapper);
       });
     }
   }
 
-  // [갤러리 섹션]
   function initGallery() {
-    const galleryGrid = document.getElementById('galleryGrid');
+    var galleryGrid = document.getElementById('galleryGrid');
     if (!galleryGrid || !Array.isArray(CONFIG.gallery)) return;
 
-    galleryGrid.innerHTML = ''; // 중복 방지
+    galleryGrid.innerHTML = '';
 
-    CONFIG.gallery.forEach((src, index) => {
-      const item = document.createElement('div');
+    CONFIG.gallery.forEach(function (src, index) {
+      var item = document.createElement('div');
       item.className = 'gallery__item';
-      
-      const img = document.createElement('img');
+
+      var img = document.createElement('img');
       img.src = src;
-      img.alt = `갤러리 사진 ${index + 1}`;
+      img.alt = '갤러리 사진 ' + (index + 1);
       img.draggable = false;
       img.loading = 'lazy';
-      
+
       item.appendChild(img);
-      item.addEventListener('click', () => openModal(index));
+      item.addEventListener('click', function () { openModal(index); });
       galleryGrid.appendChild(item);
     });
   }
 
-  // [오시는 길 섹션]
   function initLocation() {
     if (!CONFIG.location) return;
 
-    const venue = document.getElementById('locationVenue');
-    const hall = document.getElementById('locationHall');
-    const address = document.getElementById('locationAddress');
-    const tel = document.getElementById('locationTel');
-    const mapImg = document.getElementById('locationMapImg');
-    const copyBtn = document.getElementById('copyAddressBtn');
-    const kakaoBtn = document.getElementById('kakaoMapBtn');
-    const naverBtn = document.getElementById('naverMapBtn');
+    var venue = document.getElementById('locationVenue');
+    var hall = document.getElementById('locationHall');
+    var address = document.getElementById('locationAddress');
+    var tel = document.getElementById('locationTel');
+    var mapImg = document.getElementById('locationMapImg');
+    var copyBtn = document.getElementById('copyAddressBtn');
+    var kakaoBtn = document.getElementById('kakaoMapBtn');
+    var naverBtn = document.getElementById('naverMapBtn');
 
     if (venue) venue.textContent = CONFIG.location.venue || '';
     if (hall) hall.textContent = CONFIG.location.hall || '';
     if (address) address.textContent = CONFIG.location.address || '';
-    if (tel) tel.textContent = CONFIG.location.tel ? `TEL. ${CONFIG.location.tel}` : '';
+    if (tel) tel.textContent = CONFIG.location.tel ? 'TEL. ' + CONFIG.location.tel : '';
     if (mapImg && CONFIG.location.mapImage) mapImg.src = CONFIG.location.mapImage;
 
     if (kakaoBtn && CONFIG.location.kakaoMap) kakaoBtn.href = CONFIG.location.kakaoMap;
     if (naverBtn && CONFIG.location.naverMap) naverBtn.href = CONFIG.location.naverMap;
 
     if (copyBtn && CONFIG.location.address) {
-      copyBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(CONFIG.location.address).then(() => {
+      copyBtn.addEventListener('click', function () {
+        navigator.clipboard.writeText(CONFIG.location.address).then(function () {
           showToast('주소가 복사되었습니다.');
-        }).catch(() => {
-          showToast('주소 복사에 실패했습니다.');
         });
       });
     }
   }
 
-  // [축의금 계좌 섹션]
   function initAccount() {
     if (!CONFIG.account) return;
 
-    const groomList = document.getElementById('groomAccountList');
-    const brideList = document.getElementById('brideAccountList');
+    var groomList = document.getElementById('groomAccountList');
+    var brideList = document.getElementById('brideAccountList');
 
     if (groomList && Array.isArray(CONFIG.account.groom)) {
-      groomList.innerHTML = ''; // 중복 방지
-      CONFIG.account.groom.forEach(acc => groomList.appendChild(createAccountItem(acc)));
+      groomList.innerHTML = '';
+      CONFIG.account.groom.forEach(function (acc) { groomList.appendChild(createAccountItem(acc)); });
     }
 
     if (brideList && Array.isArray(CONFIG.account.bride)) {
-      brideList.innerHTML = ''; // 중복 방지
-      CONFIG.account.bride.forEach(acc => brideList.appendChild(createAccountItem(acc)));
+      brideList.innerHTML = '';
+      CONFIG.account.bride.forEach(function (acc) { brideList.appendChild(createAccountItem(acc)); });
     }
   }
 
   function createAccountItem(acc) {
-    const div = document.createElement('div');
+    var div = document.createElement('div');
     div.className = 'account__item';
     div.innerHTML = `
       <div class="account__info">
         <span class="account__name">${acc.relation} ${acc.name}</span>
         <span class="account__number">${acc.bank} ${acc.number}</span>
       </div>
-      <button class="btn btn--small account__copy">복사</button>
+      <button class="btn account__copy">복사</button>
     `;
 
-    const copyBtn = div.querySelector('.account__copy');
-    copyBtn.addEventListener('click', () => {
-      navigator.clipboard.writeText(`${acc.bank} ${acc.number}`).then(() => {
+    var copyBtn = div.querySelector('.account__copy');
+    copyBtn.addEventListener('click', function () {
+      navigator.clipboard.writeText(acc.bank + ' ' + acc.number).then(function () {
         showToast('계좌번호가 복사되었습니다.');
       });
     });
@@ -247,36 +226,31 @@ document.addEventListener('DOMContentLoaded', () => {
     return div;
   }
 
-  // [푸터]
   function initFooter() {
-    const footerText = document.getElementById('footerText');
+    var footerText = document.getElementById('footerText');
     if (footerText && CONFIG.footerText) {
       footerText.textContent = CONFIG.footerText;
     }
   }
 
-  // ==================================================
-  // 기능 동작 함수
-  // ==================================================
-
-  // [카운트다운]
+  // ----- 기능 동작 -----
   function initCountdown() {
     if (!CONFIG.weddingDate) return;
 
-    const label = document.getElementById('countdownLabel');
-    const daysEl = document.getElementById('countDays');
-    const hoursEl = document.getElementById('countHours');
-    const minsEl = document.getElementById('countMinutes');
-    const secsEl = document.getElementById('countSeconds');
+    var label = document.getElementById('countdownLabel');
+    var daysEl = document.getElementById('countDays');
+    var hoursEl = document.getElementById('countHours');
+    var minsEl = document.getElementById('countMinutes');
+    var secsEl = document.getElementById('countSeconds');
 
-    const targetDate = new Date(CONFIG.weddingDate).getTime();
+    var targetDate = new Date(CONFIG.weddingDate).getTime();
     if (label && CONFIG.hero) {
-      label.textContent = `${CONFIG.hero.groomName} ♥ ${CONFIG.hero.brideName}의 결혼식이`;
+      label.textContent = CONFIG.hero.groomName + ' ♥ ' + CONFIG.hero.brideName + '의 결혼식이';
     }
 
     function update() {
-      const now = new Date().getTime();
-      const diff = targetDate - now;
+      var now = new Date().getTime();
+      var diff = targetDate - now;
 
       if (diff <= 0) {
         if (daysEl) daysEl.textContent = '0';
@@ -286,10 +260,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const secs = Math.floor((diff % (1000 * 60)) / 1000);
+      var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      var secs = Math.floor((diff % (1000 * 60)) / 1000);
 
       if (daysEl) daysEl.textContent = days;
       if (hoursEl) hoursEl.textContent = hours;
@@ -301,35 +275,33 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(update, 1000);
   }
 
-  // [토스트 메시지]
   function showToast(message) {
-    const toast = document.getElementById('toast');
+    var toast = document.getElementById('toast');
     if (!toast) return;
 
     toast.textContent = message;
     toast.classList.add('toast--show');
 
-    setTimeout(() => {
+    setTimeout(function () {
       toast.classList.remove('toast--show');
     }, 2500);
   }
 
-  // [사진 모달 Viewer]
-  let currentModalIdx = 0;
+  var currentModalIdx = 0;
 
   function initModal() {
-    const modal = document.getElementById('photoModal');
-    const closeBtn = document.getElementById('modalClose');
-    const prevBtn = document.getElementById('modalPrev');
-    const nextBtn = document.getElementById('modalNext');
+    var modal = document.getElementById('photoModal');
+    var closeBtn = document.getElementById('modalClose');
+    var prevBtn = document.getElementById('modalPrev');
+    var nextBtn = document.getElementById('modalNext');
 
     if (!modal) return;
 
     if (closeBtn) closeBtn.addEventListener('click', closeModal);
-    if (prevBtn) prevBtn.addEventListener('click', () => navigateModal(-1));
-    if (nextBtn) nextBtn.addEventListener('click', () => navigateModal(1));
+    if (prevBtn) prevBtn.addEventListener('click', function () { navigateModal(-1); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { navigateModal(1); });
 
-    modal.addEventListener('click', (e) => {
+    modal.addEventListener('click', function (e) {
       if (e.target === modal || e.target.id === 'modalContainer') closeModal();
     });
   }
@@ -338,14 +310,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!CONFIG.gallery || !CONFIG.gallery[index]) return;
 
     currentModalIdx = index;
-    const modal = document.getElementById('photoModal');
+    var modal = document.getElementById('photoModal');
     updateModalContent();
     modal.classList.add('photo-modal--open');
     document.body.style.overflow = 'hidden';
   }
 
   function closeModal() {
-    const modal = document.getElementById('photoModal');
+    var modal = document.getElementById('photoModal');
     if (modal) {
       modal.classList.remove('photo-modal--open');
       document.body.style.overflow = '';
@@ -354,38 +326,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function navigateModal(direction) {
     if (!CONFIG.gallery) return;
-    const total = CONFIG.gallery.length;
+    var total = CONFIG.gallery.length;
     currentModalIdx = (currentModalIdx + direction + total) % total;
     updateModalContent();
   }
 
   function updateModalContent() {
-    const img = document.getElementById('modalImg');
-    const counter = document.getElementById('modalCounter');
+    var img = document.getElementById('modalImg');
+    var counter = document.getElementById('modalCounter');
 
     if (img && CONFIG.gallery) img.src = CONFIG.gallery[currentModalIdx];
-    if (counter && CONFIG.gallery) counter.textContent = `${currentModalIdx + 1} / ${CONFIG.gallery.length}`;
+    if (counter && CONFIG.gallery) counter.textContent = (currentModalIdx + 1) + ' / ' + CONFIG.gallery.length;
   }
 
-  // [계좌번호 아코디언]
   function initAccordion() {
-    const groomAcc = document.getElementById('groomAccordion');
-    const brideAcc = document.getElementById('brideAccordion');
+    var groomAcc = document.getElementById('groomAccordion');
+    var brideAcc = document.getElementById('brideAccordion');
 
     if (groomAcc) {
-      groomAcc.addEventListener('click', () => toggleAccordion('groomAccordion', 'groomAccordionPanel'));
+      groomAcc.addEventListener('click', function () { toggleAccordion('groomAccordion', 'groomAccordionPanel'); });
     }
     if (brideAcc) {
-      brideAcc.addEventListener('click', () => toggleAccordion('brideAccordion', 'brideAccordionPanel'));
+      brideAcc.addEventListener('click', function () { toggleAccordion('brideAccordion', 'brideAccordionPanel'); });
     }
   }
 
   function toggleAccordion(btnId, panelId) {
-    const btn = document.getElementById(btnId);
-    const panel = document.getElementById(panelId);
+    var btn = document.getElementById(btnId);
+    var panel = document.getElementById(panelId);
     if (!btn || !panel) return;
 
-    const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+    var isExpanded = btn.getAttribute('aria-expanded') === 'true';
     btn.setAttribute('aria-expanded', !isExpanded);
 
     if (!isExpanded) {
@@ -395,55 +366,55 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // [스크롤 애니메이션]
   function initScrollAnimation() {
-    const animateItems = document.querySelectorAll('.animate-item');
+    var animateItems = document.querySelectorAll('.animate-item');
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
         if (entry.isIntersecting) {
           entry.target.classList.add('is-animated');
         }
       });
     }, { threshold: 0.15 });
 
-    animateItems.forEach(item => observer.observe(item));
+    animateItems.forEach(function (item) { observer.observe(item); });
   }
 
-  // [벚꽃 날림 캔버스 효과]
   function initPetalCanvas() {
-    const canvas = document.getElementById('petalCanvas');
+    var canvas = document.getElementById('petalCanvas');
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    var ctx = canvas.getContext('2d');
+    var width = (canvas.width = window.innerWidth);
+    var height = (canvas.height = window.innerHeight);
 
-    window.addEventListener('resize', () => {
+    window.addEventListener('resize', function () {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
     });
 
-    const numPetals = 25;
-    const petals = Array.from({ length: numPetals }, () => ({
-      x: Math.random() * width,
-      y: Math.random() * height - height,
-      size: Math.random() * 8 + 6,
-      speedX: Math.random() * 1.5 - 0.75,
-      speedY: Math.random() * 1 + 0.8,
-      opacity: Math.random() * 0.5 + 0.3,
-      rotation: Math.random() * 360,
-      rotSpeed: Math.random() * 2 - 1
-    }));
+    var numPetals = 25;
+    var petals = Array.from({ length: numPetals }, function () {
+      return {
+        x: Math.random() * width,
+        y: Math.random() * height - height,
+        size: Math.random() * 8 + 6,
+        speedX: Math.random() * 1.5 - 0.75,
+        speedY: Math.random() * 1 + 0.8,
+        opacity: Math.random() * 0.5 + 0.3,
+        rotation: Math.random() * 360,
+        rotSpeed: Math.random() * 2 - 1
+      };
+    });
 
     function draw() {
       ctx.clearRect(0, 0, width, height);
 
-      petals.forEach(p => {
+      petals.forEach(function (p) {
         ctx.save();
         ctx.translate(p.x, p.y);
         ctx.rotate((p.rotation * Math.PI) / 180);
-        ctx.fillStyle = `rgba(255, 182, 193, ${p.opacity})`;
+        ctx.fillStyle = 'rgba(255, 182, 193, ' + p.opacity + ')';
 
         ctx.beginPath();
         ctx.moveTo(0, 0);
