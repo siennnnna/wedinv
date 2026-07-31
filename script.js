@@ -1,441 +1,532 @@
-document.addEventListener('DOMContentLoaded', function () {
-  var CONFIG = window.CONFIG || window.config || {};
-
-  // 1. 우클릭 및 이미지 드래그 방지
-  document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-  document.addEventListener('dragstart', function (e) { e.preventDefault(); });
-
-  // 2. 초기 데이터 렌더링
-  initCurtain();
-  initHero();
-  initGreeting();
-  initCalendar();
-  initStory();
-  initGallery();
-  initLocation();
-  initAccount();
-  initFooter();
-
-  // 3. 기능 초기화
-  initCountdown();
-  initPetalCanvas();
-  initModal();
-  initAccordion();
-  initScrollAnimation();
-
-  // ----- 렌더링 함수 -----
-  function initCurtain() {
-    var curtainNames = document.getElementById('curtainNames');
-    var curtainBtn = document.getElementById('curtainBtn');
-    var curtain = document.getElementById('curtain');
-
-    if (curtainNames && CONFIG.hero) {
-      curtainNames.textContent = CONFIG.hero.groomName + ' & ' + CONFIG.hero.brideName;
-    }
-
-    if (curtainBtn && curtain) {
-      curtainBtn.addEventListener('click', function () {
-        curtain.classList.add('curtain--open');
-        setTimeout(function () { curtain.style.display = 'none'; }, 1000);
-      });
-    }
-  }
-
-  function initHero() {
-    if (!CONFIG.hero) return;
-    var heroPhoto = document.getElementById('heroPhoto');
-    var heroNames = document.getElementById('heroNames');
-    var heroDate = document.getElementById('heroDate');
-    var heroVenue = document.getElementById('heroVenue');
-
-    if (heroPhoto && CONFIG.hero.mainPhoto) heroPhoto.src = CONFIG.hero.mainPhoto;
-    if (heroNames) heroNames.textContent = CONFIG.hero.groomName + '  |  ' + CONFIG.hero.brideName;
-    if (heroDate) heroDate.textContent = CONFIG.hero.dateText || '';
-    if (heroVenue) heroVenue.textContent = CONFIG.hero.venueText || '';
-  }
-
-  function initGreeting() {
-    if (!CONFIG.greeting) return;
-    var title = document.getElementById('greetingTitle');
-    var content = document.getElementById('greetingContent');
-    var parents = document.getElementById('greetingParents');
-
-    if (title) title.textContent = CONFIG.greeting.title || '모시는 글';
-    if (content) content.innerHTML = (CONFIG.greeting.content || '').replace(/\n/g, '<br>');
-    if (parents && CONFIG.greeting.parents) {
-      parents.innerHTML = CONFIG.greeting.parents.map(function (p) { return '<p>' + p + '</p>'; }).join('');
-    }
-  }
-
-  function initCalendar() {
-    var calendarGrid = document.getElementById('calendarGrid');
-    if (!calendarGrid || !CONFIG.weddingDate) return;
-
-    calendarGrid.innerHTML = '';
-
-    var weddingDate = new Date(CONFIG.weddingDate);
-    var year = weddingDate.getFullYear();
-    var month = weddingDate.getMonth();
-    var targetDay = weddingDate.getDate();
-
-    var firstDay = new Date(year, month, 1).getDay();
-    var lastDate = new Date(year, month + 1, 0).getDate();
-
-    var table = document.createElement('table');
-    table.className = 'calendar-table';
-
-    var html = '<caption>' + year + '년 ' + (month + 1) + '월</caption>';
-    html += '<thead><tr><th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th></tr></thead><tbody><tr>';
-
-    for (var i = 0; i < firstDay; i++) {
-      html += '<td></td>';
-    }
-
-    for (var day = 1; day <= lastDate; day++) {
-      var currentDay = (firstDay + day - 1) % 7;
-      if (currentDay === 0 && day !== 1) html += '</tr><tr>';
-
-      var isTarget = day === targetDay ? 'class="calendar__day--target"' : '';
-      html += '<td ' + isTarget + '><span>' + day + '</span></td>';
-    }
-
-    html += '</tr></tbody>';
-    table.innerHTML = html;
-    calendarGrid.appendChild(table);
-
-    var googleBtn = document.getElementById('googleCalBtn');
-    if (googleBtn && CONFIG.calendarLinks && CONFIG.calendarLinks.google) {
-      googleBtn.href = CONFIG.calendarLinks.google;
-    }
-  }
-
-  function initStory() {
-    if (!CONFIG.story) return;
-    var title = document.getElementById('storyTitle');
-    var content = document.getElementById('storyContent');
-    var photosContainer = document.getElementById('storyPhotos');
-
-    if (title) title.textContent = CONFIG.story.title || '우리의 이야기';
-    if (content) content.innerHTML = (CONFIG.story.content || '').replace(/\n/g, '<br>');
-
-    if (photosContainer && Array.isArray(CONFIG.story.photos)) {
-      photosContainer.innerHTML = '';
-      CONFIG.story.photos.slice(0, 4).forEach(function (src, idx) {
-        var wrapper = document.createElement('div');
-        wrapper.className = 'story__photo-wrapper';
-
-        var img = document.createElement('img');
-        img.src = src;
-        img.alt = '스토리 사진 ' + (idx + 1);
-        img.draggable = false;
-        img.loading = 'lazy';
-
-        wrapper.appendChild(img);
-        photosContainer.appendChild(wrapper);
-      });
-    }
-  }
-
-  function initGallery() {
-    var galleryGrid = document.getElementById('galleryGrid');
-    if (!galleryGrid || !Array.isArray(CONFIG.gallery)) return;
-
-    galleryGrid.innerHTML = '';
-
-    CONFIG.gallery.forEach(function (src, index) {
-      var item = document.createElement('div');
-      item.className = 'gallery__item';
-
-      var img = document.createElement('img');
-      img.src = src;
-      img.alt = '갤러리 사진 ' + (index + 1);
-      img.draggable = false;
-      img.loading = 'lazy';
-
-      item.appendChild(img);
-      item.addEventListener('click', function () { openModal(index); });
-      galleryGrid.appendChild(item);
-    });
-  }
-
-  function initLocation() {
-    if (!CONFIG.location) return;
-
-    var venue = document.getElementById('locationVenue');
-    var hall = document.getElementById('locationHall');
-    var address = document.getElementById('locationAddress');
-    var tel = document.getElementById('locationTel');
-    var mapImg = document.getElementById('locationMapImg');
-    var copyBtn = document.getElementById('copyAddressBtn');
-    var kakaoBtn = document.getElementById('kakaoMapBtn');
-    var naverBtn = document.getElementById('naverMapBtn');
-
-    if (venue) venue.textContent = CONFIG.location.venue || '';
-    if (hall) hall.textContent = CONFIG.location.hall || '';
-    if (address) address.textContent = CONFIG.location.address || '';
-    if (tel) tel.textContent = CONFIG.location.tel ? 'TEL. ' + CONFIG.location.tel : '';
-    if (mapImg && CONFIG.location.mapImage) mapImg.src = CONFIG.location.mapImage;
-
-    if (kakaoBtn && CONFIG.location.kakaoMap) kakaoBtn.href = CONFIG.location.kakaoMap;
-    if (naverBtn && CONFIG.location.naverMap) naverBtn.href = CONFIG.location.naverMap;
-
-    if (copyBtn && CONFIG.location.address) {
-      copyBtn.addEventListener('click', function () {
-        navigator.clipboard.writeText(CONFIG.location.address).then(function () {
-          showToast('주소가 복사되었습니다.');
-        });
-      });
-    }
-  }
-
-  function initAccount() {
-    if (!CONFIG.account) return;
-
-    var groomList = document.getElementById('groomAccountList');
-    var brideList = document.getElementById('brideAccountList');
-
-    if (groomList && Array.isArray(CONFIG.account.groom)) {
-      groomList.innerHTML = '';
-      CONFIG.account.groom.forEach(function (acc) { groomList.appendChild(createAccountItem(acc)); });
-    }
-
-    if (brideList && Array.isArray(CONFIG.account.bride)) {
-      brideList.innerHTML = '';
-      CONFIG.account.bride.forEach(function (acc) { brideList.appendChild(createAccountItem(acc)); });
-    }
-  }
-
-  function createAccountItem(acc) {
-    var div = document.createElement('div');
-    div.className = 'account__item';
-    div.innerHTML = `
-      <div class="account__info">
-        <span class="account__name">${acc.relation} ${acc.name}</span>
-        <span class="account__number">${acc.bank} ${acc.number}</span>
-      </div>
-      <button class="btn account__copy">복사</button>
-    `;
-
-    var copyBtn = div.querySelector('.account__copy');
-    copyBtn.addEventListener('click', function () {
-      navigator.clipboard.writeText(acc.bank + ' ' + acc.number).then(function () {
-        showToast('계좌번호가 복사되었습니다.');
-      });
-    });
-
-    return div;
-  }
-
-  function initFooter() {
-    var footerText = document.getElementById('footerText');
-    if (footerText && CONFIG.footerText) {
-      footerText.textContent = CONFIG.footerText;
-    }
-  }
-
-  // ----- 기능 동작 -----
-  function initCountdown() {
-    if (!CONFIG.weddingDate) return;
-
-    var label = document.getElementById('countdownLabel');
-    var daysEl = document.getElementById('countDays');
-    var hoursEl = document.getElementById('countHours');
-    var minsEl = document.getElementById('countMinutes');
-    var secsEl = document.getElementById('countSeconds');
-
-    var targetDate = new Date(CONFIG.weddingDate).getTime();
-    if (label && CONFIG.hero) {
-      label.textContent = CONFIG.hero.groomName + ' ♥ ' + CONFIG.hero.brideName + '의 결혼식이';
-    }
-
-    function update() {
-      var now = new Date().getTime();
-      var diff = targetDate - now;
-
-      if (diff <= 0) {
-        if (daysEl) daysEl.textContent = '0';
-        if (hoursEl) hoursEl.textContent = '0';
-        if (minsEl) minsEl.textContent = '0';
-        if (secsEl) secsEl.textContent = '0';
-        return;
-      }
-
-      var days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      var mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      var secs = Math.floor((diff % (1000 * 60)) / 1000);
-
-      if (daysEl) daysEl.textContent = days;
-      if (hoursEl) hoursEl.textContent = hours;
-      if (minsEl) minsEl.textContent = mins;
-      if (secsEl) secsEl.textContent = secs;
-    }
-
-    update();
-    setInterval(update, 1000);
-  }
-
-  function showToast(message) {
-    var toast = document.getElementById('toast');
-    if (!toast) return;
-
-    toast.textContent = message;
-    toast.classList.add('toast--show');
-
-    setTimeout(function () {
-      toast.classList.remove('toast--show');
-    }, 2500);
-  }
-
-  var currentModalIdx = 0;
-
-  function initModal() {
-    var modal = document.getElementById('photoModal');
-    var closeBtn = document.getElementById('modalClose');
-    var prevBtn = document.getElementById('modalPrev');
-    var nextBtn = document.getElementById('modalNext');
-
-    if (!modal) return;
-
-    if (closeBtn) closeBtn.addEventListener('click', closeModal);
-    if (prevBtn) prevBtn.addEventListener('click', function () { navigateModal(-1); });
-    if (nextBtn) nextBtn.addEventListener('click', function () { navigateModal(1); });
-
-    modal.addEventListener('click', function (e) {
-      if (e.target === modal || e.target.id === 'modalContainer') closeModal();
-    });
-  }
-
-  function openModal(index) {
-    if (!CONFIG.gallery || !CONFIG.gallery[index]) return;
-
-    currentModalIdx = index;
-    var modal = document.getElementById('photoModal');
-    updateModalContent();
-    modal.classList.add('photo-modal--open');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeModal() {
-    var modal = document.getElementById('photoModal');
-    if (modal) {
-      modal.classList.remove('photo-modal--open');
-      document.body.style.overflow = '';
-    }
-  }
-
-  function navigateModal(direction) {
-    if (!CONFIG.gallery) return;
-    var total = CONFIG.gallery.length;
-    currentModalIdx = (currentModalIdx + direction + total) % total;
-    updateModalContent();
-  }
-
-  function updateModalContent() {
-    var img = document.getElementById('modalImg');
-    var counter = document.getElementById('modalCounter');
-
-    if (img && CONFIG.gallery) img.src = CONFIG.gallery[currentModalIdx];
-    if (counter && CONFIG.gallery) counter.textContent = (currentModalIdx + 1) + ' / ' + CONFIG.gallery.length;
-  }
-
-  function initAccordion() {
-    var groomAcc = document.getElementById('groomAccordion');
-    var brideAcc = document.getElementById('brideAccordion');
-
-    if (groomAcc) {
-      groomAcc.addEventListener('click', function () { toggleAccordion('groomAccordion', 'groomAccordionPanel'); });
-    }
-    if (brideAcc) {
-      brideAcc.addEventListener('click', function () { toggleAccordion('brideAccordion', 'brideAccordionPanel'); });
-    }
-  }
-
-  function toggleAccordion(btnId, panelId) {
-    var btn = document.getElementById(btnId);
-    var panel = document.getElementById(panelId);
-    if (!btn || !panel) return;
-
-    var isExpanded = btn.getAttribute('aria-expanded') === 'true';
-    btn.setAttribute('aria-expanded', !isExpanded);
-
-    if (!isExpanded) {
-      panel.style.maxHeight = panel.scrollHeight + 'px';
-    } else {
-      panel.style.maxHeight = '0px';
-    }
-  }
-
-  function initScrollAnimation() {
-    var animateItems = document.querySelectorAll('.animate-item');
-
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-animated');
-        }
-      });
-    }, { threshold: 0.15 });
-
-    animateItems.forEach(function (item) { observer.observe(item); });
-  }
-
-  function initPetalCanvas() {
-    var canvas = document.getElementById('petalCanvas');
-    if (!canvas) return;
-
-    var ctx = canvas.getContext('2d');
-    var width = (canvas.width = window.innerWidth);
-    var height = (canvas.height = window.innerHeight);
-
-    window.addEventListener('resize', function () {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    });
-
-    var numPetals = 25;
-    var petals = Array.from({ length: numPetals }, function () {
-      return {
-        x: Math.random() * width,
-        y: Math.random() * height - height,
-        size: Math.random() * 8 + 6,
-        speedX: Math.random() * 1.5 - 0.75,
-        speedY: Math.random() * 1 + 0.8,
-        opacity: Math.random() * 0.5 + 0.3,
-        rotation: Math.random() * 360,
-        rotSpeed: Math.random() * 2 - 1
-      };
-    });
-
-    function draw() {
-      ctx.clearRect(0, 0, width, height);
-
-      petals.forEach(function (p) {
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate((p.rotation * Math.PI) / 180);
-        ctx.fillStyle = 'rgba(255, 182, 193, ' + p.opacity + ')';
-
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.bezierCurveTo(-p.size, -p.size, -p.size, p.size, 0, p.size);
-        ctx.bezierCurveTo(p.size, p.size, p.size, -p.size, 0, 0);
-        ctx.fill();
-        ctx.restore();
-
-        p.x += p.speedX;
-        p.y += p.speedY;
-        p.rotation += p.rotSpeed;
-
-        if (p.y > height) {
-          p.y = -20;
-          p.x = Math.random() * width;
-        }
-      });
-
-      requestAnimationFrame(draw);
-    }
-
-    draw();
-  }
-});
+/* ==================================================
+ * 1. 기본 리셋 및 폰트 설정
+ * ================================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Noto Serif KR', serif;
+  color: #4a4a4a;
+  background-color: #faf8f5;
+  line-height: 1.6;
+  word-break: keep-all;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ==================================================
+ * 2. 커튼 레이어
+ * ================================================== */
+.curtain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+.curtain__left,
+.curtain__right {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  background-color: #f7f3ee;
+  transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
+  z-index: 1;
+}
+
+.curtain__left { left: 0; }
+.curtain__right { right: 0; }
+
+.curtain__content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #6b5e52;
+  transition: opacity 0.5s ease;
+}
+
+.curtain__subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.curtain__names {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+
+.curtain__btn {
+  padding: 12px 28px;
+  border: 1px solid #6b5e52;
+  background: transparent;
+  color: #6b5e52;
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.curtain--open .curtain__left { transform: translateX(-100%); }
+.curtain--open .curtain__right { transform: translateX(100%); }
+.curtain--open .curtain__content { opacity: 0; }
+
+/* ==================================================
+ * 3. 벚꽃 캔버스 및 배경
+ * ================================================== */
+.petal-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ==================================================
+ * 4. 레이아웃 공통
+ * ================================================== */
+.main-content {
+  max-width: 480px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.03);
+}
+
+.section {
+  padding: 60px 24px;
+  text-align: center;
+}
+
+.section__inner {
+  max-width: 100%;
+}
+
+.section__title {
+  font-family: 'Cormorant Garamond', 'Noto Serif KR', serif;
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: #8b7355;
+  margin-bottom: 28px;
+  letter-spacing: 1px;
+}
+
+.ornament {
+  color: #d4c5b9;
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+}
+
+/* ==================================================
+ * 5. Hero (메인 사진) 섹션
+ * ================================================== */
+.hero {
+  position: relative;
+  padding: 0 0 40px 0;
+}
+
+.hero__photo {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.hero__content {
+  padding: 32px 20px 20px 20px;
+}
+
+.hero__label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  color: #a39385;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+.hero__names {
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: #333333;
+}
+
+.hero__divider {
+  width: 30px;
+  height: 1px;
+  background-color: #d4c5b9;
+  margin: 16px auto;
+}
+
+.hero__date, .hero__venue {
+  font-size: 0.95rem;
+  color: #666666;
+  line-height: 1.5;
+}
+
+/* 카운트다운 */
+.countdown {
+  margin-top: 24px;
+  padding: 20px 16px;
+  background-color: #faf7f2;
+  border-radius: 12px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.countdown__label {
+  font-size: 0.85rem;
+  color: #8c7b6c;
+  margin-bottom: 12px;
+}
+
+.countdown__timer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.countdown__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.countdown__number {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #5c4d42;
+}
+
+.countdown__unit {
+  font-size: 0.75rem;
+  color: #999;
+}
+
+.countdown__sep {
+  font-size: 1.1rem;
+  color: #bbb;
+  margin-bottom: 12px;
+}
+
+/* ==================================================
+ * 6. 달력 섹션
+ * ================================================== */
+.calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+}
+
+.calendar-table caption {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.calendar-table th {
+  padding: 8px;
+  font-size: 0.85rem;
+  color: #888;
+  font-weight: normal;
+}
+
+.calendar-table td {
+  padding: 10px 0;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.calendar-table td span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.calendar__day--target span {
+  background-color: #a88d77;
+  color: #ffffff !important;
+  font-weight: bold;
+}
+
+.calendar-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* ==================================================
+ * 7. 스토리 섹션 (달력 폭에 맞춘 축소 디자인)
+ * ================================================== */
+.story__text {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #555;
+  margin-bottom: 24px;
+}
+
+.story__photos {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 10px 0;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.story__photos img {
+  width: 220px;
+  max-width: 70vw;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+  scroll-snap-align: center;
+}
+
+/* ==================================================
+ * 8. 갤러리 섹션
+ * ================================================== */
+.gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.gallery__item {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.gallery__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ==================================================
+ * 9. 사진 모달 (윗부분 잘림 완전 방지)
+ * ================================================== */
+.photo-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.photo-modal--open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.photo-modal__container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 60px 16px;
+  box-sizing: border-box;
+}
+
+.photo-modal__img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain !important; /* 이미지 상단 잘림 방지 */
+  border-radius: 4px;
+}
+
+.photo-modal__close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 1002;
+}
+
+.photo-modal__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2.5rem;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.photo-modal__nav--prev { left: 10px; }
+.photo-modal__nav--next { right: 10px; }
+
+.photo-modal__counter {
+  position: absolute;
+  bottom: 20px;
+  color: #aaa;
+  font-size: 0.85rem;
+}
+
+/* ==================================================
+ * 10. 오시는 길 & 계좌 아코디언 & 버튼
+ * ================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  background-color: #f3eee8;
+  color: #555;
+}
+
+.btn--outline {
+  border: 1px solid #d4c5b9;
+  background: #fff;
+}
+
+.accordion {
+  margin-bottom: 12px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.accordion__trigger {
+  width: 100%;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #faf7f2;
+  border: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: #444;
+  cursor: pointer;
+}
+
+.accordion__panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background-color: #fff;
+}
+
+.accordion__panel-inner {
+  padding: 16px;
+}
+
+.account__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px id #f5f5f5;
+}
+
+.account__item:last-child {
+  border-bottom: none;
+}
+
+.account__info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.account__name {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.account__number {
+  font-size: 0.95rem;
+  color: #333;
+}
+
+/* ==================================================
+ * 11. 토스트 알림 & 애니메이션
+ * ================================================== */
+.toast {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 2000;
+}
+
+.toast--show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.animate-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.animate-item.is-animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.footer {
+  padding: 40px 20px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #aaa;
+  background-color: #faf8f5;
+}
