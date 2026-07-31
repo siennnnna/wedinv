@@ -1,532 +1,470 @@
-/* ==================================================
- * 1. 기본 리셋 및 폰트 설정
- * ================================================== */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
-}
-
-body {
-  font-family: 'Noto Serif KR', serif;
-  color: #4a4a4a;
-  background-color: #faf8f5;
-  line-height: 1.6;
-  word-break: keep-all;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-/* ==================================================
- * 2. 커튼 레이어
- * ================================================== */
-.curtain {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  transition: opacity 0.8s ease, visibility 0.8s ease;
-}
-
-.curtain__left,
-.curtain__right {
-  position: absolute;
-  top: 0;
-  width: 50%;
-  height: 100%;
-  background-color: #f7f3ee;
-  transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
-  z-index: 1;
-}
-
-.curtain__left { left: 0; }
-.curtain__right { right: 0; }
-
-.curtain__content {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  color: #6b5e52;
-  transition: opacity 0.5s ease;
-}
-
-.curtain__subtitle {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.2rem;
-  letter-spacing: 2px;
-  margin-bottom: 8px;
-}
-
-.curtain__names {
-  font-size: 1.5rem;
-  font-weight: 500;
-  margin-bottom: 24px;
-}
-
-.curtain__btn {
-  padding: 12px 28px;
-  border: 1px solid #6b5e52;
-  background: transparent;
-  color: #6b5e52;
-  font-family: inherit;
-  font-size: 0.95rem;
-  cursor: pointer;
-  border-radius: 20px;
-  transition: all 0.3s ease;
-}
-
-.curtain--open .curtain__left { transform: translateX(-100%); }
-.curtain--open .curtain__right { transform: translateX(100%); }
-.curtain--open .curtain__content { opacity: 0; }
-
-/* ==================================================
- * 3. 벚꽃 캔버스 및 배경
- * ================================================== */
-.petal-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 10;
-}
-
-/* ==================================================
- * 4. 레이아웃 공통
- * ================================================== */
-.main-content {
-  max-width: 480px;
-  margin: 0 auto;
-  background-color: #ffffff;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.03);
-}
-
-.section {
-  padding: 60px 24px;
-  text-align: center;
-}
-
-.section__inner {
-  max-width: 100%;
-}
-
-.section__title {
-  font-family: 'Cormorant Garamond', 'Noto Serif KR', serif;
-  font-size: 1.35rem;
-  font-weight: 500;
-  color: #8b7355;
-  margin-bottom: 28px;
-  letter-spacing: 1px;
-}
-
-.ornament {
-  color: #d4c5b9;
-  font-size: 1.2rem;
-  margin-bottom: 12px;
-}
-
-/* ==================================================
- * 5. Hero (메인 사진) 섹션
- * ================================================== */
-.hero {
-  position: relative;
-  padding: 0 0 40px 0;
-}
-
-.hero__photo {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.hero__content {
-  padding: 32px 20px 20px 20px;
-}
-
-.hero__label {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.1rem;
-  color: #a39385;
-  letter-spacing: 2px;
-  margin-bottom: 12px;
-}
-
-.hero__names {
-  font-size: 1.4rem;
-  font-weight: 400;
-  color: #333333;
-}
-
-.hero__divider {
-  width: 30px;
-  height: 1px;
-  background-color: #d4c5b9;
-  margin: 16px auto;
-}
-
-.hero__date, .hero__venue {
-  font-size: 0.95rem;
-  color: #666666;
-  line-height: 1.5;
-}
-
-/* 카운트다운 */
-.countdown {
-  margin-top: 24px;
-  padding: 20px 16px;
-  background-color: #faf7f2;
-  border-radius: 12px;
-  margin-left: 20px;
-  margin-right: 20px;
-}
-
-.countdown__label {
-  font-size: 0.85rem;
-  color: #8c7b6c;
-  margin-bottom: 12px;
-}
-
-.countdown__timer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-}
-
-.countdown__item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.countdown__number {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: #5c4d42;
-}
-
-.countdown__unit {
-  font-size: 0.75rem;
-  color: #999;
-}
-
-.countdown__sep {
-  font-size: 1.1rem;
-  color: #bbb;
-  margin-bottom: 12px;
-}
-
-/* ==================================================
- * 6. 달력 섹션
- * ================================================== */
-.calendar-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 24px;
-}
-
-.calendar-table caption {
-  font-size: 1.05rem;
-  font-weight: 500;
-  color: #666;
-  margin-bottom: 16px;
-}
-
-.calendar-table th {
-  padding: 8px;
-  font-size: 0.85rem;
-  color: #888;
-  font-weight: normal;
-}
-
-.calendar-table td {
-  padding: 10px 0;
-  font-size: 0.9rem;
-  color: #444;
-}
-
-.calendar-table td span {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-}
-
-.calendar__day--target span {
-  background-color: #a88d77;
-  color: #ffffff !important;
-  font-weight: bold;
-}
-
-.calendar-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-/* ==================================================
- * 7. 스토리 섹션 (달력 폭에 맞춘 축소 디자인)
- * ================================================== */
-.story__text {
-  font-size: 0.95rem;
-  line-height: 1.8;
-  color: #555;
-  margin-bottom: 24px;
-}
-
-.story__photos {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding: 10px 0;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-}
-
-.story__photos img {
-  width: 220px;
-  max-width: 70vw;
-  height: auto;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  flex-shrink: 0;
-  scroll-snap-align: center;
-}
-
-/* ==================================================
- * 8. 갤러리 섹션
- * ================================================== */
-.gallery__grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-
-.gallery__item {
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.gallery__item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* ==================================================
- * 9. 사진 모달 (윗부분 잘림 완전 방지)
- * ================================================== */
-.photo-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.9);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-.photo-modal--open {
-  opacity: 1;
-  visibility: visible;
-}
-
-.photo-modal__container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  padding: 60px 16px;
-  box-sizing: border-box;
-}
-
-.photo-modal__img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain !important; /* 이미지 상단 잘림 방지 */
-  border-radius: 4px;
-}
-
-.photo-modal__close {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 2rem;
-  cursor: pointer;
-  z-index: 1002;
-}
-
-.photo-modal__nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 2.5rem;
-  padding: 10px;
-  cursor: pointer;
-  z-index: 1001;
-}
-
-.photo-modal__nav--prev { left: 10px; }
-.photo-modal__nav--next { right: 10px; }
-
-.photo-modal__counter {
-  position: absolute;
-  bottom: 20px;
-  color: #aaa;
-  font-size: 0.85rem;
-}
-
-/* ==================================================
- * 10. 오시는 길 & 계좌 아코디언 & 버튼
- * ================================================== */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px 18px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  text-decoration: none;
-  cursor: pointer;
-  border: none;
-  background-color: #f3eee8;
-  color: #555;
-}
-
-.btn--outline {
-  border: 1px solid #d4c5b9;
-  background: #fff;
-}
-
-.accordion {
-  margin-bottom: 12px;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.accordion__trigger {
-  width: 100%;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #faf7f2;
-  border: none;
-  font-family: inherit;
-  font-size: 0.95rem;
-  color: #444;
-  cursor: pointer;
-}
-
-.accordion__panel {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease;
-  background-color: #fff;
-}
-
-.accordion__panel-inner {
-  padding: 16px;
-}
-
-.account__item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px id #f5f5f5;
-}
-
-.account__item:last-child {
-  border-bottom: none;
-}
-
-.account__info {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-}
-
-.account__name {
-  font-size: 0.85rem;
-  color: #888;
-}
-
-.account__number {
-  font-size: 0.95rem;
-  color: #333;
-}
-
-/* ==================================================
- * 11. 토스트 알림 & 애니메이션
- * ================================================== */
-.toast {
-  position: fixed;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background-color: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-  z-index: 2000;
-}
-
-.toast--show {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
-}
-
-.animate-item {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-
-.animate-item.is-animated {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.footer {
-  padding: 40px 20px;
-  text-align: center;
-  font-size: 0.8rem;
-  color: #aaa;
-  background-color: #faf8f5;
-}
+document.addEventListener('DOMContentLoaded', () => {
+  // CONFIG 데이터 확인
+  const CONFIG = window.CONFIG || window.config || {};
+
+  // --------------------------------------------------
+  // 1. 우클릭 및 이미지 드래그 방지 (추가 보호)
+  // --------------------------------------------------
+  document.addEventListener('contextmenu', (e) => e.preventDefault());
+  document.addEventListener('dragstart', (e) => e.preventDefault());
+
+  // --------------------------------------------------
+  // 2. 초기 데이터 렌더링 (중복 방지 innerHTML = '' 적용)
+  // --------------------------------------------------
+  initCurtain();
+  initHero();
+  initGreeting();
+  initCalendar();
+  initStory();
+  initGallery();
+  initLocation();
+  initAccount();
+  initFooter();
+
+  // --------------------------------------------------
+  // 3. 기능별 모듈 초기화
+  // --------------------------------------------------
+  initCountdown();
+  initPetalCanvas();
+  initModal();
+  initAccordion();
+  initScrollAnimation();
+
+  // ==================================================
+  // 렌더링 함수 정의
+  // ==================================================
+
+  // [커튼 레이어]
+  function initCurtain() {
+    const curtainNames = document.getElementById('curtainNames');
+    const curtainBtn = document.getElementById('curtainBtn');
+    const curtain = document.getElementById('curtain');
+
+    if (curtainNames && CONFIG.hero) {
+      curtainNames.textContent = `${CONFIG.hero.groomName} & ${CONFIG.hero.brideName}`;
+    }
+
+    if (curtainBtn && curtain) {
+      curtainBtn.addEventListener('click', () => {
+        curtain.classList.add('curtain--open');
+        setTimeout(() => {
+          curtain.style.display = 'none';
+        }, 1000);
+      });
+    }
+  }
+
+  // [메인 히어로 섹션]
+  function initHero() {
+    if (!CONFIG.hero) return;
+
+    const heroPhoto = document.getElementById('heroPhoto');
+    const heroNames = document.getElementById('heroNames');
+    const heroDate = document.getElementById('heroDate');
+    const heroVenue = document.getElementById('heroVenue');
+
+    if (heroPhoto && CONFIG.hero.mainPhoto) heroPhoto.src = CONFIG.hero.mainPhoto;
+    if (heroNames) heroNames.textContent = `${CONFIG.hero.groomName}  |  ${CONFIG.hero.brideName}`;
+    if (heroDate) heroDate.textContent = CONFIG.hero.dateText || '';
+    if (heroVenue) heroVenue.textContent = CONFIG.hero.venueText || '';
+  }
+
+  // [모시는 글 섹션]
+  function initGreeting() {
+    if (!CONFIG.greeting) return;
+
+    const title = document.getElementById('greetingTitle');
+    const content = document.getElementById('greetingContent');
+    const parents = document.getElementById('greetingParents');
+
+    if (title) title.textContent = CONFIG.greeting.title || '모시는 글';
+    if (content) content.innerHTML = (CONFIG.greeting.content || '').replace(/\n/g, '<br>');
+    if (parents && CONFIG.greeting.parents) {
+      parents.innerHTML = CONFIG.greeting.parents.map(p => `<p>${p}</p>`).join('');
+    }
+  }
+
+  // [달력 섹션]
+  function initCalendar() {
+    const calendarGrid = document.getElementById('calendarGrid');
+    if (!calendarGrid || !CONFIG.weddingDate) return;
+
+    calendarGrid.innerHTML = ''; // 중복 방지
+
+    const weddingDate = new Date(CONFIG.weddingDate);
+    const year = weddingDate.getFullYear();
+    const month = weddingDate.getMonth();
+    const targetDay = weddingDate.getDate();
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const lastDate = new Date(year, month + 1, 0).getDate();
+
+    const table = document.createElement('table');
+    table.className = 'calendar-table';
+
+    let html = `<caption>${year}년 ${month + 1}월</caption>`;
+    html += '<thead><tr><th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th></tr></thead><tbody><tr>';
+
+    for (let i = 0; i < firstDay; i++) {
+      html += '<td></td>';
+    }
+
+    for (let day = 1; day <= lastDate; day++) {
+      const currentDay = (firstDay + day - 1) % 7;
+      if (currentDay === 0 && day !== 1) html += '</tr><tr>';
+
+      const isTarget = day === targetDay ? 'class="calendar__day--target"' : '';
+      html += `<td ${isTarget}><span>${day}</span></td>`;
+    }
+
+    html += '</tr></tbody>';
+    table.innerHTML = html;
+    calendarGrid.appendChild(table);
+
+    // 구글/애플 캘린더 링크 설정
+    const googleBtn = document.getElementById('googleCalBtn');
+    if (googleBtn && CONFIG.calendarLinks?.google) {
+      googleBtn.href = CONFIG.calendarLinks.google;
+    }
+  }
+
+  // [스토리 섹션]
+  function initStory() {
+    if (!CONFIG.story) return;
+
+    const title = document.getElementById('storyTitle');
+    const content = document.getElementById('storyContent');
+    const photosContainer = document.getElementById('storyPhotos');
+
+    if (title) title.textContent = CONFIG.story.title || '우리의 이야기';
+    if (content) content.innerHTML = (CONFIG.story.content || '').replace(/\n/g, '<br>');
+
+    if (photosContainer && Array.isArray(CONFIG.story.photos)) {
+      photosContainer.innerHTML = ''; // 중복 방지
+      CONFIG.story.photos.forEach((src, idx) => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = `스토리 사진 ${idx + 1}`;
+        img.draggable = false;
+        img.loading = 'lazy';
+        photosContainer.appendChild(img);
+      });
+    }
+  }
+
+  // [갤러리 섹션]
+  function initGallery() {
+    const galleryGrid = document.getElementById('galleryGrid');
+    if (!galleryGrid || !Array.isArray(CONFIG.gallery)) return;
+
+    galleryGrid.innerHTML = ''; // 중복 방지
+
+    CONFIG.gallery.forEach((src, index) => {
+      const item = document.createElement('div');
+      item.className = 'gallery__item';
+      
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = `갤러리 사진 ${index + 1}`;
+      img.draggable = false;
+      img.loading = 'lazy';
+      
+      item.appendChild(img);
+      item.addEventListener('click', () => openModal(index));
+      galleryGrid.appendChild(item);
+    });
+  }
+
+  // [오시는 길 섹션]
+  function initLocation() {
+    if (!CONFIG.location) return;
+
+    const venue = document.getElementById('locationVenue');
+    const hall = document.getElementById('locationHall');
+    const address = document.getElementById('locationAddress');
+    const tel = document.getElementById('locationTel');
+    const mapImg = document.getElementById('locationMapImg');
+    const copyBtn = document.getElementById('copyAddressBtn');
+    const kakaoBtn = document.getElementById('kakaoMapBtn');
+    const naverBtn = document.getElementById('naverMapBtn');
+
+    if (venue) venue.textContent = CONFIG.location.venue || '';
+    if (hall) hall.textContent = CONFIG.location.hall || '';
+    if (address) address.textContent = CONFIG.location.address || '';
+    if (tel) tel.textContent = CONFIG.location.tel ? `TEL. ${CONFIG.location.tel}` : '';
+    if (mapImg && CONFIG.location.mapImage) mapImg.src = CONFIG.location.mapImage;
+
+    if (kakaoBtn && CONFIG.location.kakaoMap) kakaoBtn.href = CONFIG.location.kakaoMap;
+    if (naverBtn && CONFIG.location.naverMap) naverBtn.href = CONFIG.location.naverMap;
+
+    if (copyBtn && CONFIG.location.address) {
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(CONFIG.location.address).then(() => {
+          showToast('주소가 복사되었습니다.');
+        }).catch(() => {
+          showToast('주소 복사에 실패했습니다.');
+        });
+      });
+    }
+  }
+
+  // [축의금 계좌 섹션]
+  function initAccount() {
+    if (!CONFIG.account) return;
+
+    const groomList = document.getElementById('groomAccountList');
+    const brideList = document.getElementById('brideAccountList');
+
+    if (groomList && Array.isArray(CONFIG.account.groom)) {
+      groomList.innerHTML = ''; // 중복 방지
+      CONFIG.account.groom.forEach(acc => groomList.appendChild(createAccountItem(acc)));
+    }
+
+    if (brideList && Array.isArray(CONFIG.account.bride)) {
+      brideList.innerHTML = ''; // 중복 방지
+      CONFIG.account.bride.forEach(acc => brideList.appendChild(createAccountItem(acc)));
+    }
+  }
+
+  function createAccountItem(acc) {
+    const div = document.createElement('div');
+    div.className = 'account__item';
+    div.innerHTML = `
+      <div class="account__info">
+        <span class="account__name">${acc.relation} ${acc.name}</span>
+        <span class="account__number">${acc.bank} ${acc.number}</span>
+      </div>
+      <button class="btn btn--small account__copy">복사</button>
+    `;
+
+    const copyBtn = div.querySelector('.account__copy');
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(`${acc.bank} ${acc.number}`).then(() => {
+        showToast('계좌번호가 복사되었습니다.');
+      });
+    });
+
+    return div;
+  }
+
+  // [푸터]
+  function initFooter() {
+    const footerText = document.getElementById('footerText');
+    if (footerText && CONFIG.footerText) {
+      footerText.textContent = CONFIG.footerText;
+    }
+  }
+
+  // ==================================================
+  // 기능 동작 함수
+  // ==================================================
+
+  // [카운트다운]
+  function initCountdown() {
+    if (!CONFIG.weddingDate) return;
+
+    const label = document.getElementById('countdownLabel');
+    const daysEl = document.getElementById('countDays');
+    const hoursEl = document.getElementById('countHours');
+    const minsEl = document.getElementById('countMinutes');
+    const secsEl = document.getElementById('countSeconds');
+
+    const targetDate = new Date(CONFIG.weddingDate).getTime();
+    if (label && CONFIG.hero) {
+      label.textContent = `${CONFIG.hero.groomName} ♥ ${CONFIG.hero.brideName}의 결혼식이`;
+    }
+
+    function update() {
+      const now = new Date().getTime();
+      const diff = targetDate - now;
+
+      if (diff <= 0) {
+        if (daysEl) daysEl.textContent = '0';
+        if (hoursEl) hoursEl.textContent = '0';
+        if (minsEl) minsEl.textContent = '0';
+        if (secsEl) secsEl.textContent = '0';
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+      if (daysEl) daysEl.textContent = days;
+      if (hoursEl) hoursEl.textContent = hours;
+      if (minsEl) minsEl.textContent = mins;
+      if (secsEl) secsEl.textContent = secs;
+    }
+
+    update();
+    setInterval(update, 1000);
+  }
+
+  // [토스트 메시지]
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+
+    toast.textContent = message;
+    toast.classList.add('toast--show');
+
+    setTimeout(() => {
+      toast.classList.remove('toast--show');
+    }, 2500);
+  }
+
+  // [사진 모달 Viewer]
+  let currentModalIdx = 0;
+
+  function initModal() {
+    const modal = document.getElementById('photoModal');
+    const closeBtn = document.getElementById('modalClose');
+    const prevBtn = document.getElementById('modalPrev');
+    const nextBtn = document.getElementById('modalNext');
+
+    if (!modal) return;
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (prevBtn) prevBtn.addEventListener('click', () => navigateModal(-1));
+    if (nextBtn) nextBtn.addEventListener('click', () => navigateModal(1));
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal || e.target.id === 'modalContainer') closeModal();
+    });
+  }
+
+  function openModal(index) {
+    if (!CONFIG.gallery || !CONFIG.gallery[index]) return;
+
+    currentModalIdx = index;
+    const modal = document.getElementById('photoModal');
+    updateModalContent();
+    modal.classList.add('photo-modal--open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    const modal = document.getElementById('photoModal');
+    if (modal) {
+      modal.classList.remove('photo-modal--open');
+      document.body.style.overflow = '';
+    }
+  }
+
+  function navigateModal(direction) {
+    if (!CONFIG.gallery) return;
+    const total = CONFIG.gallery.length;
+    currentModalIdx = (currentModalIdx + direction + total) % total;
+    updateModalContent();
+  }
+
+  function updateModalContent() {
+    const img = document.getElementById('modalImg');
+    const counter = document.getElementById('modalCounter');
+
+    if (img && CONFIG.gallery) img.src = CONFIG.gallery[currentModalIdx];
+    if (counter && CONFIG.gallery) counter.textContent = `${currentModalIdx + 1} / ${CONFIG.gallery.length}`;
+  }
+
+  // [계좌번호 아코디언]
+  function initAccordion() {
+    const groomAcc = document.getElementById('groomAccordion');
+    const brideAcc = document.getElementById('brideAccordion');
+
+    if (groomAcc) {
+      groomAcc.addEventListener('click', () => toggleAccordion('groomAccordion', 'groomAccordionPanel'));
+    }
+    if (brideAcc) {
+      brideAcc.addEventListener('click', () => toggleAccordion('brideAccordion', 'brideAccordionPanel'));
+    }
+  }
+
+  function toggleAccordion(btnId, panelId) {
+    const btn = document.getElementById(btnId);
+    const panel = document.getElementById(panelId);
+    if (!btn || !panel) return;
+
+    const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', !isExpanded);
+
+    if (!isExpanded) {
+      panel.style.maxHeight = panel.scrollHeight + 'px';
+    } else {
+      panel.style.maxHeight = '0px';
+    }
+  }
+
+  // [스크롤 애니메이션]
+  function initScrollAnimation() {
+    const animateItems = document.querySelectorAll('.animate-item');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-animated');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    animateItems.forEach(item => observer.observe(item));
+  }
+
+  // [벚꽃 날림 캔버스 효과]
+  function initPetalCanvas() {
+    const canvas = document.getElementById('petalCanvas');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const numPetals = 25;
+    const petals = Array.from({ length: numPetals }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height - height,
+      size: Math.random() * 8 + 6,
+      speedX: Math.random() * 1.5 - 0.75,
+      speedY: Math.random() * 1 + 0.8,
+      opacity: Math.random() * 0.5 + 0.3,
+      rotation: Math.random() * 360,
+      rotSpeed: Math.random() * 2 - 1
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+
+      petals.forEach(p => {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = `rgba(255, 182, 193, ${p.opacity})`;
+
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(-p.size, -p.size, -p.size, p.size, 0, p.size);
+        ctx.bezierCurveTo(p.size, p.size, p.size, -p.size, 0, 0);
+        ctx.fill();
+        ctx.restore();
+
+        p.x += p.speedX;
+        p.y += p.speedY;
+        p.rotation += p.rotSpeed;
+
+        if (p.y > height) {
+          p.y = -20;
+          p.x = Math.random() * width;
+        }
+      });
+
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  }
+});
