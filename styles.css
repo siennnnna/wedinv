@@ -689,10 +689,12 @@ a {
   display: flex !important;
   gap: 12px !important;
   overflow-x: auto !important;
+  overflow-y: hidden !important;        /* 세로 방향 스크롤 완전 차단 */
+  touch-action: pan-x !important;       /* 터치 동작을 좌우(가로)로만 제한 (위아래 흔들림 방지) */
   scroll-snap-type: x mandatory !important;
   -webkit-overflow-scrolling: touch !important;
-  padding: 8px 4px var(--spacing-sm) 4px !important; /* 내부 여백 조절 */
-  scrollbar-width: none; /* Firefox 스크롤바 숨김 */
+  padding: 8px 4px var(--spacing-sm) 4px !important;
+  scrollbar-width: none;
 }
 
 .story__photos::-webkit-scrollbar {
