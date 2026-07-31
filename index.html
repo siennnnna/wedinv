@@ -1,22 +1,31 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <script>
-  (function redirectToExternalBrowser() {
-    var userAgent = navigator.userAgent.toLowerCase();
-    var currentUrl = location.href;
+<script>
+(function redirectToExternalBrowser() {
+  var userAgent = navigator.userAgent.toLowerCase();
+  var currentUrl = location.href;
 
-    // 카카오톡 인앱 브라우저인지 확인
-    if (userAgent.indexOf('kakaotalk') > -1) {
-      if (userAgent.indexOf('iphone') > -1 || userAgent.indexOf('ipad') > -1 || userAgent.indexOf('ipod') > -1) {
-        // 아이폰(iOS): Safari로 열기
-        location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(currentUrl);
-      } else {
-        // 안드로이드: 기본 외부 브라우저(Chrome 등)로 열기
-        location.href = 'intent://' + currentUrl.replace(/https?:\/\//i, '') + '#Intent;scheme=http;package=com.android.chrome;end';
-      }
+  // 카카오톡 인앱 브라우저 체크
+  if (userAgent.indexOf('kakaotalk') > -1) {
+    
+    // 1. iOS (아이폰 / 아이패드)
+    if (/iphone|ipad|ipod/.test(userAgent)) {
+      // ftp:// 스킴을 이용해 Safari 개설을 유도하는 방식
+      // 또는 kakaotalk://kakaopay/home 등 카카오 내부 스킴을 활용할 수 있으나,
+      // 가장 안정적인 방법은 Safari 열기 안내 팝업을 띄우는 것입니다.
+      location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(currentUrl);
+    } 
+    // 2. Android (안드로이드)
+    else {
+      // Intent 스킴 포맷 정밀화 (S.browser_fallback_url 지정)
+      var targetUrl = currentUrl.replace(/^https?:\/\//i, '');
+      var intentUrl = 'intent://' + targetUrl + '#Intent;scheme=https;package=com.android.chrome;end';
+      location.href = intentUrl;
     }
-  })();
+  }
+})();
+</script>
 </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
