@@ -87,7 +87,7 @@ body {
 .curtain--open .curtain__content { opacity: 0; }
 
 /* ==================================================
- * 3. 벚꽃 캔버스
+ * 3. 벚꽃 캔버스 및 배경
  * ================================================== */
 .petal-canvas {
   position: fixed;
@@ -134,7 +134,7 @@ body {
 }
 
 /* ==================================================
- * 5. Hero 메인 섹션
+ * 5. Hero (메인 사진) 섹션
  * ================================================== */
 .hero {
   position: relative;
@@ -276,7 +276,7 @@ body {
 }
 
 /* ==================================================
- * 7. 스토리 섹션 (사진 4장 너비 맞춤 및 둥근 모서리 차단)
+ * 7. 스토리 섹션 (달력 폭에 맞춘 축소 디자인)
  * ================================================== */
 .story__text {
   font-size: 0.95rem;
@@ -286,30 +286,24 @@ body {
 }
 
 .story__photos {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
   gap: 12px;
-  padding: 0;
-  margin: 0 auto;
-  pointer-events: none; /* 클릭 및 터치 불가능 처리 */
+  overflow-x: auto;
+  padding: 10px 0;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
 }
 
-.story__photo-wrapper {
-  position: relative;
-  width: 100%;
+.story__photos img {
+  width: 220px;
+  max-width: 70vw;
+  height: auto;
   aspect-ratio: 4 / 5;
-  border-radius: 12px;
-  overflow: hidden; /* Safari 모서리 잘림 방지 필수 속성 */
-  -webkit-mask-image: -webkit-radial-gradient(white, black); /* Safari border-radius 버그 해결 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-}
-
-.story__photo-wrapper img {
-  width: 100%;
-  height: 100%;
   object-fit: cover;
-  display: block;
-  pointer-events: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+  scroll-snap-align: center;
 }
 
 /* ==================================================
@@ -326,7 +320,6 @@ body {
   overflow: hidden;
   border-radius: 6px;
   cursor: pointer;
-  -webkit-mask-image: -webkit-radial-gradient(white, black);
 }
 
 .gallery__item img {
@@ -336,7 +329,7 @@ body {
 }
 
 /* ==================================================
- * 9. 사진 모달
+ * 9. 사진 모달 (윗부분 잘림 완전 방지)
  * ================================================== */
 .photo-modal {
   position: fixed;
@@ -372,7 +365,7 @@ body {
 .photo-modal__img {
   max-width: 100%;
   max-height: 100%;
-  object-fit: contain !important;
+  object-fit: contain !important; /* 이미지 상단 잘림 방지 */
   border-radius: 4px;
 }
 
@@ -412,7 +405,7 @@ body {
 }
 
 /* ==================================================
- * 10. 오시는 길 & 아코디언 & 버튼
+ * 10. 오시는 길 & 계좌 아코디언 & 버튼
  * ================================================== */
 .btn {
   display: inline-flex;
@@ -471,7 +464,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px id #f5f5f5;
 }
 
 .account__item:last-child {
@@ -495,7 +488,7 @@ body {
 }
 
 /* ==================================================
- * 11. 토스트 & 애니메이션
+ * 11. 토스트 알림 & 애니메이션
  * ================================================== */
 .toast {
   position: fixed;
