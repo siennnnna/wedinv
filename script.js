@@ -1,470 +1,748 @@
-document.addEventListener('DOMContentLoaded', () => {
-  // CONFIG 데이터 확인
-  const CONFIG = window.CONFIG || window.config || {};
+/**
+ * Classic Elegant Wedding Invitation
+ * Korean Mobile 청첩장 - Script
+ */
 
-  // --------------------------------------------------
-  // 1. 우클릭 및 이미지 드래그 방지 (추가 보호)
-  // --------------------------------------------------
-  document.addEventListener('contextmenu', (e) => e.preventDefault());
-  document.addEventListener('dragstart', (e) => e.preventDefault());
+(function () {
+  'use strict';
 
-  // --------------------------------------------------
-  // 2. 초기 데이터 렌더링 (중복 방지 innerHTML = '' 적용)
-  // --------------------------------------------------
-  initCurtain();
-  initHero();
-  initGreeting();
-  initCalendar();
-  initStory();
-  initGallery();
-  initLocation();
-  initAccount();
-  initFooter();
+  /* ═══════════════════════════════════════════
+     Utility Helpers
+     ═══════════════════════════════════════════ */
 
-  // --------------------------------------------------
-  // 3. 기능별 모듈 초기화
-  // --------------------------------------------------
-  initCountdown();
-  initPetalCanvas();
-  initModal();
-  initAccordion();
-  initScrollAnimation();
+  const $ = (sel, ctx = document) => ctx.querySelector(sel);
+  const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 
-  // ==================================================
-  // 렌더링 함수 정의
-  // ==================================================
+  function formatDate(dateStr, timeStr) {
+    const d = new Date(`${dateStr}T${timeStr}:00`);
+    const days = ['일', '월', '화', '수', '목', '금', '토'];
+    const year = d.getFullYear();
+    const month = d.getMonth() + 1;
+    const date = d.getDate();
+    const day = days[d.getDay()];
+    const hours = d.getHours();
+    const minutes = d.getMinutes();
+    const period = hours < 12 ? '오전' : '오후';
+    const h12 = hours % 12 || 12;
+    const minuteStr = minutes > 0 ? ` ${minutes}분` : '';
+    return `${year}년 ${month}월 ${date}일 ${day}요일 ${period} ${h12}시${minuteStr}`;
+  }
 
-  // [커튼 레이어]
+  function getWeddingDateTime() {
+    return new Date(`${CONFIG.wedding.date}T${CONFIG.wedding.time}:00`);
+  }
+
+  /* ═══════════════════════════════════════════
+     Image Auto-Detection
+     ═══════════════════════════════════════════ */
+
+  function loadImagesFromFolder(folder, maxAttempts = 50) {
+    return new Promise(resolve => {
+      const images = [];
+      let current = 1;
+      let consecutiveFails = 0;
+
+      function tryNext() {
+        if (current > maxAttempts || consecutiveFails >= 3) {
+          resolve(images);
+          return;
+        }
+        const img = new Image();
+        const path = `images/${folder}/${current}.jpg`;
+        img.onload = function() {
+          images.push(path);
+          consecutiveFails = 0;
+          current++;
+          tryNext();
+        };
+        img.onerror = function() {
+          consecutiveFails++;
+          current++;
+          tryNext();
+        };
+        img.src = path;
+      }
+
+      tryNext();
+    });
+  }
+
+  /* ═══════════════════════════════════════════
+     Toast
+     ═══════════════════════════════════════════ */
+
+  let toastTimer = null;
+  function showToast(message) {
+    const el = $('#toast');
+    el.textContent = message;
+    el.classList.add('is-visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('is-visible'), 2500);
+  }
+
+  /* ═══════════════════════════════════════════
+     Clipboard
+     ═══════════════════════════════════════════ */
+
+  async function copyToClipboard(text, successMsg) {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.cssText = 'position:fixed;opacity:0;left:-9999px';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+      }
+      showToast(successMsg || '복사되었습니다');
+    } catch {
+      showToast('복사에 실패했습니다');
+    }
+  }
+
+  /* ═══════════════════════════════════════════
+     OG Meta Tags
+     ═══════════════════════════════════════════ */
+
+  function setMetaTags() {
+    const m = CONFIG.meta;
+    document.title = m.title;
+    const setMeta = (attr, val, content) => {
+      const el = document.querySelector(`meta[${attr}="${val}"]`);
+      if (el) el.setAttribute('content', content);
+    };
+    setMeta('property', 'og:title', m.title);
+    setMeta('property', 'og:description', m.description);
+    setMeta('property', 'og:image', 'images/og/1.jpg');
+    setMeta('name', 'description', m.description);
+  }
+
+  /* ═══════════════════════════════════════════
+     Curtain
+     ═══════════════════════════════════════════ */
+
   function initCurtain() {
-    const curtainNames = document.getElementById('curtainNames');
-    const curtainBtn = document.getElementById('curtainBtn');
-    const curtain = document.getElementById('curtain');
+    const curtain = $('#curtain');
+    const btn = $('#curtainBtn');
+    const namesEl = $('#curtainNames');
 
-    if (curtainNames && CONFIG.hero) {
-      curtainNames.textContent = `${CONFIG.hero.groomName} & ${CONFIG.hero.brideName}`;
+    if (CONFIG.useCurtain === false) {
+      curtain.style.display = 'none';
+      initPetals();
+      return;
     }
 
-    if (curtainBtn && curtain) {
-      curtainBtn.addEventListener('click', () => {
-        curtain.classList.add('curtain--open');
-        setTimeout(() => {
-          curtain.style.display = 'none';
-        }, 1000);
-      });
-    }
+    namesEl.textContent = `${CONFIG.groom.name}  &  ${CONFIG.bride.name}`;
+
+    btn.addEventListener('click', () => {
+      curtain.classList.add('is-open');
+      document.body.classList.remove('no-scroll');
+      setTimeout(() => {
+        curtain.classList.add('is-hidden');
+        initPetals();
+      }, 1400);
+    });
+
+    document.body.classList.add('no-scroll');
   }
 
-  // [메인 히어로 섹션]
+  /* ═══════════════════════════════════════════
+     Falling Petals
+     ═══════════════════════════════════════════ */
+
+  function initPetals() {
+    const canvas = $('#petalCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    const petals = [];
+    const PETAL_COUNT = 25;
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    class Petal {
+      constructor() {
+        this.reset(true);
+      }
+
+      reset(initial = false) {
+        this.x = Math.random() * width;
+        this.y = initial ? Math.random() * height * -1 : -20;
+        this.size = 8 + Math.random() * 10;
+        this.speedY = 0.5 + Math.random() * 1;
+        this.speedX = -0.3 + Math.random() * 0.6;
+        this.rotation = Math.random() * Math.PI * 2;
+        this.rotSpeed = (Math.random() - 0.5) * 0.02;
+        this.oscillateAmp = 20 + Math.random() * 30;
+        this.oscillateSpeed = 0.01 + Math.random() * 0.02;
+        this.oscillateOffset = Math.random() * Math.PI * 2;
+        this.opacity = 0.2 + Math.random() * 0.4;
+        this.t = 0;
+      }
+
+      update() {
+        this.t++;
+        this.y += this.speedY;
+        this.x += this.speedX + Math.sin(this.t * this.oscillateSpeed + this.oscillateOffset) * 0.5;
+        this.rotation += this.rotSpeed;
+        if (this.y > height + 20) this.reset();
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        ctx.globalAlpha = this.opacity;
+        ctx.fillStyle = '#e8c8b0';
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(
+          this.size * 0.3, -this.size * 0.4,
+          this.size * 0.7, -this.size * 0.5,
+          this.size, 0
+        );
+        ctx.bezierCurveTo(
+          this.size * 0.7, this.size * 0.3,
+          this.size * 0.3, this.size * 0.3,
+          0, 0
+        );
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    for (let i = 0; i < PETAL_COUNT; i++) {
+      petals.push(new Petal());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      petals.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  }
+
+  /* ═══════════════════════════════════════════
+     Hero Section
+     ═══════════════════════════════════════════ */
+
   function initHero() {
-    if (!CONFIG.hero) return;
-
-    const heroPhoto = document.getElementById('heroPhoto');
-    const heroNames = document.getElementById('heroNames');
-    const heroDate = document.getElementById('heroDate');
-    const heroVenue = document.getElementById('heroVenue');
-
-    if (heroPhoto && CONFIG.hero.mainPhoto) heroPhoto.src = CONFIG.hero.mainPhoto;
-    if (heroNames) heroNames.textContent = `${CONFIG.hero.groomName}  |  ${CONFIG.hero.brideName}`;
-    if (heroDate) heroDate.textContent = CONFIG.hero.dateText || '';
-    if (heroVenue) heroVenue.textContent = CONFIG.hero.venueText || '';
+    $('#heroPhoto').src = 'images/hero/1.jpg';
+    $('#heroNames').textContent = `${CONFIG.groom.name}  ·  ${CONFIG.bride.name}`;
+    $('#heroDate').textContent = formatDate(CONFIG.wedding.date, CONFIG.wedding.time);
+    $('#heroVenue').textContent = CONFIG.wedding.venue;
   }
 
-  // [모시는 글 섹션]
-  function initGreeting() {
-    if (!CONFIG.greeting) return;
+  /* ═══════════════════════════════════════════
+     Countdown
+     ═══════════════════════════════════════════ */
 
-    const title = document.getElementById('greetingTitle');
-    const content = document.getElementById('greetingContent');
-    const parents = document.getElementById('greetingParents');
-
-    if (title) title.textContent = CONFIG.greeting.title || '모시는 글';
-    if (content) content.innerHTML = (CONFIG.greeting.content || '').replace(/\n/g, '<br>');
-    if (parents && CONFIG.greeting.parents) {
-      parents.innerHTML = CONFIG.greeting.parents.map(p => `<p>${p}</p>`).join('');
-    }
-  }
-
-  // [달력 섹션]
-  function initCalendar() {
-    const calendarGrid = document.getElementById('calendarGrid');
-    if (!calendarGrid || !CONFIG.weddingDate) return;
-
-    calendarGrid.innerHTML = ''; // 중복 방지
-
-    const weddingDate = new Date(CONFIG.weddingDate);
-    const year = weddingDate.getFullYear();
-    const month = weddingDate.getMonth();
-    const targetDay = weddingDate.getDate();
-
-    const firstDay = new Date(year, month, 1).getDay();
-    const lastDate = new Date(year, month + 1, 0).getDate();
-
-    const table = document.createElement('table');
-    table.className = 'calendar-table';
-
-    let html = `<caption>${year}년 ${month + 1}월</caption>`;
-    html += '<thead><tr><th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th></tr></thead><tbody><tr>';
-
-    for (let i = 0; i < firstDay; i++) {
-      html += '<td></td>';
-    }
-
-    for (let day = 1; day <= lastDate; day++) {
-      const currentDay = (firstDay + day - 1) % 7;
-      if (currentDay === 0 && day !== 1) html += '</tr><tr>';
-
-      const isTarget = day === targetDay ? 'class="calendar__day--target"' : '';
-      html += `<td ${isTarget}><span>${day}</span></td>`;
-    }
-
-    html += '</tr></tbody>';
-    table.innerHTML = html;
-    calendarGrid.appendChild(table);
-
-    // 구글/애플 캘린더 링크 설정
-    const googleBtn = document.getElementById('googleCalBtn');
-    if (googleBtn && CONFIG.calendarLinks?.google) {
-      googleBtn.href = CONFIG.calendarLinks.google;
-    }
-  }
-
-  // [스토리 섹션]
-  function initStory() {
-    if (!CONFIG.story) return;
-
-    const title = document.getElementById('storyTitle');
-    const content = document.getElementById('storyContent');
-    const photosContainer = document.getElementById('storyPhotos');
-
-    if (title) title.textContent = CONFIG.story.title || '우리의 이야기';
-    if (content) content.innerHTML = (CONFIG.story.content || '').replace(/\n/g, '<br>');
-
-    if (photosContainer && Array.isArray(CONFIG.story.photos)) {
-      photosContainer.innerHTML = ''; // 중복 방지
-      CONFIG.story.photos.forEach((src, idx) => {
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = `스토리 사진 ${idx + 1}`;
-        img.draggable = false;
-        img.loading = 'lazy';
-        photosContainer.appendChild(img);
-      });
-    }
-  }
-
-  // [갤러리 섹션]
-  function initGallery() {
-    const galleryGrid = document.getElementById('galleryGrid');
-    if (!galleryGrid || !Array.isArray(CONFIG.gallery)) return;
-
-    galleryGrid.innerHTML = ''; // 중복 방지
-
-    CONFIG.gallery.forEach((src, index) => {
-      const item = document.createElement('div');
-      item.className = 'gallery__item';
-      
-      const img = document.createElement('img');
-      img.src = src;
-      img.alt = `갤러리 사진 ${index + 1}`;
-      img.draggable = false;
-      img.loading = 'lazy';
-      
-      item.appendChild(img);
-      item.addEventListener('click', () => openModal(index));
-      galleryGrid.appendChild(item);
-    });
-  }
-
-  // [오시는 길 섹션]
-  function initLocation() {
-    if (!CONFIG.location) return;
-
-    const venue = document.getElementById('locationVenue');
-    const hall = document.getElementById('locationHall');
-    const address = document.getElementById('locationAddress');
-    const tel = document.getElementById('locationTel');
-    const mapImg = document.getElementById('locationMapImg');
-    const copyBtn = document.getElementById('copyAddressBtn');
-    const kakaoBtn = document.getElementById('kakaoMapBtn');
-    const naverBtn = document.getElementById('naverMapBtn');
-
-    if (venue) venue.textContent = CONFIG.location.venue || '';
-    if (hall) hall.textContent = CONFIG.location.hall || '';
-    if (address) address.textContent = CONFIG.location.address || '';
-    if (tel) tel.textContent = CONFIG.location.tel ? `TEL. ${CONFIG.location.tel}` : '';
-    if (mapImg && CONFIG.location.mapImage) mapImg.src = CONFIG.location.mapImage;
-
-    if (kakaoBtn && CONFIG.location.kakaoMap) kakaoBtn.href = CONFIG.location.kakaoMap;
-    if (naverBtn && CONFIG.location.naverMap) naverBtn.href = CONFIG.location.naverMap;
-
-    if (copyBtn && CONFIG.location.address) {
-      copyBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(CONFIG.location.address).then(() => {
-          showToast('주소가 복사되었습니다.');
-        }).catch(() => {
-          showToast('주소 복사에 실패했습니다.');
-        });
-      });
-    }
-  }
-
-  // [축의금 계좌 섹션]
-  function initAccount() {
-    if (!CONFIG.account) return;
-
-    const groomList = document.getElementById('groomAccountList');
-    const brideList = document.getElementById('brideAccountList');
-
-    if (groomList && Array.isArray(CONFIG.account.groom)) {
-      groomList.innerHTML = ''; // 중복 방지
-      CONFIG.account.groom.forEach(acc => groomList.appendChild(createAccountItem(acc)));
-    }
-
-    if (brideList && Array.isArray(CONFIG.account.bride)) {
-      brideList.innerHTML = ''; // 중복 방지
-      CONFIG.account.bride.forEach(acc => brideList.appendChild(createAccountItem(acc)));
-    }
-  }
-
-  function createAccountItem(acc) {
-    const div = document.createElement('div');
-    div.className = 'account__item';
-    div.innerHTML = `
-      <div class="account__info">
-        <span class="account__name">${acc.relation} ${acc.name}</span>
-        <span class="account__number">${acc.bank} ${acc.number}</span>
-      </div>
-      <button class="btn btn--small account__copy">복사</button>
-    `;
-
-    const copyBtn = div.querySelector('.account__copy');
-    copyBtn.addEventListener('click', () => {
-      navigator.clipboard.writeText(`${acc.bank} ${acc.number}`).then(() => {
-        showToast('계좌번호가 복사되었습니다.');
-      });
-    });
-
-    return div;
-  }
-
-  // [푸터]
-  function initFooter() {
-    const footerText = document.getElementById('footerText');
-    if (footerText && CONFIG.footerText) {
-      footerText.textContent = CONFIG.footerText;
-    }
-  }
-
-  // ==================================================
-  // 기능 동작 함수
-  // ==================================================
-
-  // [카운트다운]
   function initCountdown() {
-    if (!CONFIG.weddingDate) return;
-
-    const label = document.getElementById('countdownLabel');
-    const daysEl = document.getElementById('countDays');
-    const hoursEl = document.getElementById('countHours');
-    const minsEl = document.getElementById('countMinutes');
-    const secsEl = document.getElementById('countSeconds');
-
-    const targetDate = new Date(CONFIG.weddingDate).getTime();
-    if (label && CONFIG.hero) {
-      label.textContent = `${CONFIG.hero.groomName} ♥ ${CONFIG.hero.brideName}의 결혼식이`;
-    }
+    const target = getWeddingDateTime();
 
     function update() {
-      const now = new Date().getTime();
-      const diff = targetDate - now;
+      const now = new Date();
+      const diff = target - now;
+
+      const labelEl = $('#countdownLabel');
 
       if (diff <= 0) {
-        if (daysEl) daysEl.textContent = '0';
-        if (hoursEl) hoursEl.textContent = '0';
-        if (minsEl) minsEl.textContent = '0';
-        if (secsEl) secsEl.textContent = '0';
+        $('#countDays').textContent = '0';
+        $('#countHours').textContent = '0';
+        $('#countMinutes').textContent = '0';
+        $('#countSeconds').textContent = '0';
+        labelEl.textContent = '결혼식이 시작되었습니다';
         return;
       }
 
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const secs = Math.floor((diff % (1000 * 60)) / 1000);
+      const totalDays = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      labelEl.textContent = `결혼식까지 D-${totalDays}`;
 
-      if (daysEl) daysEl.textContent = days;
-      if (hoursEl) hoursEl.textContent = hours;
-      if (minsEl) minsEl.textContent = mins;
-      if (secsEl) secsEl.textContent = secs;
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      $('#countDays').textContent = days;
+      $('#countHours').textContent = String(hours).padStart(2, '0');
+      $('#countMinutes').textContent = String(minutes).padStart(2, '0');
+      $('#countSeconds').textContent = String(seconds).padStart(2, '0');
     }
 
     update();
     setInterval(update, 1000);
   }
 
-  // [토스트 메시지]
-  function showToast(message) {
-    const toast = document.getElementById('toast');
-    if (!toast) return;
+  /* ═══════════════════════════════════════════
+     Greeting Section
+     ═══════════════════════════════════════════ */
 
-    toast.textContent = message;
-    toast.classList.add('toast--show');
+  function initGreeting() {
+    $('#greetingTitle').textContent = CONFIG.greeting.title;
+    $('#greetingContent').textContent = CONFIG.greeting.content;
 
-    setTimeout(() => {
-      toast.classList.remove('toast--show');
-    }, 2500);
+    const g = CONFIG.groom;
+    const b = CONFIG.bride;
+
+    function parentLine(father, mother, fatherDeceased, motherDeceased) {
+      const fd = fatherDeceased ? ' deceased' : '';
+      const md = motherDeceased ? ' deceased' : '';
+      return `<span class="${fd}">${father}</span> · <span class="${md}">${mother}</span>`;
+    }
+
+    const parentsHTML = `
+      <div class="parent-row">
+        ${parentLine(g.father, g.mother, g.fatherDeceased, g.motherDeceased)}
+        <span class="parent-dot">●</span>
+        의 아들 <span class="child-name">${g.name}</span>
+      </div>
+      <div class="parent-row">
+        ${parentLine(b.father, b.mother, b.fatherDeceased, b.motherDeceased)}
+        <span class="parent-dot">●</span>
+        의 딸 <span class="child-name">${b.name}</span>
+      </div>
+    `;
+
+    $('#greetingParents').innerHTML = parentsHTML;
   }
 
-  // [사진 모달 Viewer]
-  let currentModalIdx = 0;
+  /* ═══════════════════════════════════════════
+     Calendar Section
+     ═══════════════════════════════════════════ */
 
-  function initModal() {
-    const modal = document.getElementById('photoModal');
-    const closeBtn = document.getElementById('modalClose');
-    const prevBtn = document.getElementById('modalPrev');
-    const nextBtn = document.getElementById('modalNext');
+  function initCalendar() {
+    const dt = getWeddingDateTime();
+    const year = dt.getFullYear();
+    const month = dt.getMonth();
+    const weddingDay = dt.getDate();
 
-    if (!modal) return;
+    const grid = $('#calendarGrid');
 
-    if (closeBtn) closeBtn.addEventListener('click', closeModal);
-    if (prevBtn) prevBtn.addEventListener('click', () => navigateModal(-1));
-    if (nextBtn) nextBtn.addEventListener('click', () => navigateModal(1));
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'];
+    grid.innerHTML = `<div class="calendar__header">${monthNames[month]} ${year}</div>`;
 
+    const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+    const wdRow = document.createElement('div');
+    wdRow.className = 'calendar__weekdays';
+    weekdays.forEach(wd => {
+      const el = document.createElement('span');
+      el.className = 'calendar__weekday';
+      el.textContent = wd;
+      wdRow.appendChild(el);
+    });
+    grid.appendChild(wdRow);
+
+    const daysContainer = document.createElement('div');
+    daysContainer.className = 'calendar__days';
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const lastDate = new Date(year, month + 1, 0).getDate();
+
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement('span');
+      empty.className = 'calendar__day is-empty';
+      daysContainer.appendChild(empty);
+    }
+
+    for (let d = 1; d <= lastDate; d++) {
+      const dayEl = document.createElement('span');
+      dayEl.className = 'calendar__day';
+      if (d === weddingDay) dayEl.classList.add('is-today');
+      dayEl.textContent = d;
+      daysContainer.appendChild(dayEl);
+    }
+
+    grid.appendChild(daysContainer);
+
+    const startDate = dt.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    const endDt = new Date(dt.getTime() + 2 * 60 * 60 * 1000);
+    const endDate = endDt.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(CONFIG.groom.name + ' ♥ ' + CONFIG.bride.name + ' 결혼식')}&dates=${startDate}/${endDate}&location=${encodeURIComponent(CONFIG.wedding.venue + ' ' + CONFIG.wedding.address)}&details=${encodeURIComponent('결혼식에 초대합니다.')}`;
+    $('#googleCalBtn').href = gcalUrl;
+
+    $('#icsDownloadBtn').addEventListener('click', () => {
+      const icsContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Wedding//Invitation//KO',
+        'BEGIN:VEVENT',
+        `DTSTART:${startDate}`,
+        `DTEND:${endDate}`,
+        `SUMMARY:${CONFIG.groom.name} ♥ ${CONFIG.bride.name} 결혼식`,
+        `LOCATION:${CONFIG.wedding.venue} ${CONFIG.wedding.address}`,
+        'DESCRIPTION:결혼식에 초대합니다.',
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].join('\r\n');
+
+      const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'wedding.ics';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('캘린더 파일이 다운로드됩니다');
+    });
+  }
+
+  /* ═══════════════════════════════════════════
+     Story Section
+     ═══════════════════════════════════════════ */
+
+  function initStory(storyImages) {
+    $('#storyTitle').textContent = CONFIG.story.title;
+    $('#storyContent').textContent = CONFIG.story.content;
+
+    const container = $('#storyPhotos');
+    const placeholder = container.querySelector('.loading-placeholder');
+    if (placeholder) placeholder.remove();
+
+    if (storyImages.length === 0) return;
+
+    storyImages.forEach((src, i) => {
+      const div = document.createElement('div');
+      div.className = 'story__photo-item animate-item';
+      div.setAttribute('data-animate', 'fade-up');
+      div.innerHTML = `<img src="${src}" alt="스토리 사진 ${i + 1}" loading="lazy" draggable="false">`;
+      div.addEventListener('click', () => openPhotoModal(storyImages, i));
+      container.appendChild(div);
+    });
+  }
+
+  /* ═══════════════════════════════════════════
+     Gallery Section
+     ═══════════════════════════════════════════ */
+
+  function initGallery(galleryImages) {
+    const grid = $('#galleryGrid');
+    const placeholder = grid.querySelector('.loading-placeholder');
+    if (placeholder) placeholder.remove();
+
+    if (galleryImages.length === 0) {
+      const gallerySection = $('#gallery');
+      if (gallerySection) gallerySection.style.display = 'none';
+      return;
+    }
+
+    galleryImages.forEach((src, i) => {
+      const div = document.createElement('div');
+      div.className = 'gallery__item animate-item';
+      div.setAttribute('data-animate', 'scale-in');
+      div.innerHTML = `<img src="${src}" alt="갤러리 사진 ${i + 1}" loading="lazy" draggable="false">`;
+      div.addEventListener('click', () => openPhotoModal(galleryImages, i));
+      grid.appendChild(div);
+    });
+  }
+
+  /* ═══════════════════════════════════════════
+     Photo Modal (with swipe)
+     ═══════════════════════════════════════════ */
+
+  let modalImages = [];
+  let modalIndex = 0;
+  let touchStartX = 0;
+  let touchEndX = 0;
+  let touchStartY = 0;
+  let touchEndY = 0;
+
+  function openPhotoModal(images, index) {
+    modalImages = images;
+    modalIndex = index;
+    showModalImage();
+    $('#photoModal').classList.add('is-open');
+    document.body.classList.add('no-scroll');
+  }
+
+  function closePhotoModal() {
+    $('#photoModal').classList.remove('is-open');
+    document.body.classList.remove('no-scroll');
+  }
+
+  function showModalImage() {
+    const img = $('#modalImg');
+    img.src = modalImages[modalIndex];
+    $('#modalCounter').textContent = `${modalIndex + 1} / ${modalImages.length}`;
+
+    $('#modalPrev').style.display = modalIndex > 0 ? '' : 'none';
+    $('#modalNext').style.display = modalIndex < modalImages.length - 1 ? '' : 'none';
+  }
+
+  function modalNavigate(dir) {
+    const newIndex = modalIndex + dir;
+    if (newIndex >= 0 && newIndex < modalImages.length) {
+      modalIndex = newIndex;
+      showModalImage();
+    }
+  }
+
+  function initPhotoModal() {
+    $('#modalClose').addEventListener('click', closePhotoModal);
+    $('#modalPrev').addEventListener('click', () => modalNavigate(-1));
+    $('#modalNext').addEventListener('click', () => modalNavigate(1));
+
+    const modal = $('#photoModal');
     modal.addEventListener('click', (e) => {
-      if (e.target === modal || e.target.id === 'modalContainer') closeModal();
+      if (e.target === modal || e.target.id === 'modalContainer') {
+        closePhotoModal();
+      }
     });
+
+    document.addEventListener('keydown', (e) => {
+      if (!modal.classList.contains('is-open')) return;
+      if (e.key === 'Escape') closePhotoModal();
+      if (e.key === 'ArrowLeft') modalNavigate(-1);
+      if (e.key === 'ArrowRight') modalNavigate(1);
+    });
+
+    const container = $('#modalContainer');
+
+    container.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    container.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      touchEndY = e.changedTouches[0].screenY;
+      handleSwipe();
+    }, { passive: true });
   }
 
-  function openModal(index) {
-    if (!CONFIG.gallery || !CONFIG.gallery[index]) return;
+  function handleSwipe() {
+    const diffX = touchStartX - touchEndX;
+    const diffY = touchStartY - touchEndY;
+    const minSwipe = 50;
 
-    currentModalIdx = index;
-    const modal = document.getElementById('photoModal');
-    updateModalContent();
-    modal.classList.add('photo-modal--open');
-    document.body.style.overflow = 'hidden';
-  }
+    if (Math.abs(diffX) < minSwipe || Math.abs(diffX) < Math.abs(diffY)) return;
 
-  function closeModal() {
-    const modal = document.getElementById('photoModal');
-    if (modal) {
-      modal.classList.remove('photo-modal--open');
-      document.body.style.overflow = '';
-    }
-  }
-
-  function navigateModal(direction) {
-    if (!CONFIG.gallery) return;
-    const total = CONFIG.gallery.length;
-    currentModalIdx = (currentModalIdx + direction + total) % total;
-    updateModalContent();
-  }
-
-  function updateModalContent() {
-    const img = document.getElementById('modalImg');
-    const counter = document.getElementById('modalCounter');
-
-    if (img && CONFIG.gallery) img.src = CONFIG.gallery[currentModalIdx];
-    if (counter && CONFIG.gallery) counter.textContent = `${currentModalIdx + 1} / ${CONFIG.gallery.length}`;
-  }
-
-  // [계좌번호 아코디언]
-  function initAccordion() {
-    const groomAcc = document.getElementById('groomAccordion');
-    const brideAcc = document.getElementById('brideAccordion');
-
-    if (groomAcc) {
-      groomAcc.addEventListener('click', () => toggleAccordion('groomAccordion', 'groomAccordionPanel'));
-    }
-    if (brideAcc) {
-      brideAcc.addEventListener('click', () => toggleAccordion('brideAccordion', 'brideAccordionPanel'));
-    }
-  }
-
-  function toggleAccordion(btnId, panelId) {
-    const btn = document.getElementById(btnId);
-    const panel = document.getElementById(panelId);
-    if (!btn || !panel) return;
-
-    const isExpanded = btn.getAttribute('aria-expanded') === 'true';
-    btn.setAttribute('aria-expanded', !isExpanded);
-
-    if (!isExpanded) {
-      panel.style.maxHeight = panel.scrollHeight + 'px';
+    if (diffX > 0) {
+      modalNavigate(1);
     } else {
-      panel.style.maxHeight = '0px';
+      modalNavigate(-1);
     }
   }
 
-  // [스크롤 애니메이션]
-  function initScrollAnimation() {
-    const animateItems = document.querySelectorAll('.animate-item');
+  /* ═══════════════════════════════════════════
+     Location Section
+     ═══════════════════════════════════════════ */
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-animated');
-        }
-      });
-    }, { threshold: 0.15 });
+  function initLocation() {
+    const w = CONFIG.wedding;
+    $('#locationVenue').textContent = w.venue;
+    $('#locationHall').textContent = w.hall;
+    $('#locationAddress').textContent = w.address;
+    $('#locationTel').textContent = w.tel ? `Tel. ${w.tel}` : '';
+    $('#locationMapImg').src = 'images/location/1.jpg';
+    $('#kakaoMapBtn').href = w.mapLinks.kakao || '#';
+    $('#naverMapBtn').href = w.mapLinks.naver || '#';
 
-    animateItems.forEach(item => observer.observe(item));
+    $('#copyAddressBtn').addEventListener('click', () => {
+      copyToClipboard(w.address, '주소가 복사되었습니다');
+    });
   }
 
-  // [벚꽃 날림 캔버스 효과]
-  function initPetalCanvas() {
-    const canvas = document.getElementById('petalCanvas');
-    if (!canvas) return;
+  /* ═══════════════════════════════════════════
+     Account Section (축의금)
+     ═══════════════════════════════════════════ */
 
-    const ctx = canvas.getContext('2d');
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+  function renderAccounts(accounts, containerId) {
+    const container = $(`#${containerId}`);
+    accounts.forEach((acc) => {
+      const item = document.createElement('div');
+      item.className = 'account-item';
+      item.innerHTML = `
+        <div class="account-item__info">
+          <div class="account-item__role">${acc.role}</div>
+          <div class="account-item__detail">
+            <span class="account-item__name">${acc.name || ''}</span>
+            ${acc.bank} ${acc.number}
+          </div>
+        </div>
+        <button class="account-item__copy" data-account="${acc.bank} ${acc.number} ${acc.name || ''}">
+          복사
+        </button>
+      `;
+      container.appendChild(item);
+    });
+  }
 
-    window.addEventListener('resize', () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+  /* 아코디언 높이 짤림 및 애니메이션 개선 */
+  function initAccordion(triggerId, panelId) {
+    const trigger = $(`#${triggerId}`);
+    const panel = $(`#${panelId}`);
+
+    trigger.addEventListener('click', () => {
+      const expanded = trigger.getAttribute('aria-expanded') === 'true';
+      trigger.setAttribute('aria-expanded', !expanded);
+
+      if (!expanded) {
+        panel.style.maxHeight = panel.scrollHeight + 'px';
+        setTimeout(() => {
+          if (trigger.getAttribute('aria-expanded') === 'true') {
+            panel.style.maxHeight = 'none';
+          }
+        }, 400);
+      } else {
+        panel.style.maxHeight = panel.scrollHeight + 'px';
+        panel.offsetHeight; // force reflow
+        panel.style.maxHeight = '0';
+      }
+    });
+  }
+
+  function initAccounts() {
+    renderAccounts(CONFIG.accounts.groom, 'groomAccountList');
+    renderAccounts(CONFIG.accounts.bride, 'brideAccountList');
+
+    initAccordion('groomAccordion', 'groomAccordionPanel');
+    initAccordion('brideAccordion', 'brideAccordionPanel');
+
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.account-item__copy');
+      if (!btn) return;
+      const text = btn.dataset.account;
+      copyToClipboard(text, '계좌번호가 복사되었습니다');
+    });
+  }
+
+  /* ═══════════════════════════════════════════
+     Footer
+     ═══════════════════════════════════════════ */
+
+  function initFooter() {
+    const dt = getWeddingDateTime();
+    const year = dt.getFullYear();
+    const month = String(dt.getMonth() + 1).padStart(2, '0');
+    const day = String(dt.getDate()).padStart(2, '0');
+    $('#footerText').textContent = `${CONFIG.groom.name} & ${CONFIG.bride.name} — ${year}.${month}.${day}`;
+  }
+
+  /* ═══════════════════════════════════════════
+     Loading Placeholders
+     ═══════════════════════════════════════════ */
+
+  function showLoadingPlaceholders() {
+    const storyPhotos = $('#storyPhotos');
+    const galleryGrid = $('#galleryGrid');
+
+    const placeholderHTML = '<div class="loading-placeholder"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>';
+
+    if (storyPhotos) storyPhotos.innerHTML = placeholderHTML;
+    if (galleryGrid) galleryGrid.innerHTML = placeholderHTML;
+  }
+
+  /* ═══════════════════════════════════════════
+     Scroll Animations (IntersectionObserver)
+     ═══════════════════════════════════════════ */
+
+  function initScrollAnimations() {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.15,
+        rootMargin: '0px 0px -40px 0px'
+      }
+    );
+
+    $$('.animate-item').forEach((el) => observer.observe(el));
+
+    const mutObs = new MutationObserver((mutations) => {
+      mutations.forEach((m) => {
+        m.addedNodes.forEach((node) => {
+          if (node.nodeType !== 1) return;
+          if (node.classList && node.classList.contains('animate-item')) {
+            observer.observe(node);
+          }
+          if (node.querySelectorAll) {
+            node.querySelectorAll('.animate-item').forEach((el) => observer.observe(el));
+          }
+        });
+      });
     });
 
-    const numPetals = 25;
-    const petals = Array.from({ length: numPetals }, () => ({
-      x: Math.random() * width,
-      y: Math.random() * height - height,
-      size: Math.random() * 8 + 6,
-      speedX: Math.random() * 1.5 - 0.75,
-      speedY: Math.random() * 1 + 0.8,
-      opacity: Math.random() * 0.5 + 0.3,
-      rotation: Math.random() * 360,
-      rotSpeed: Math.random() * 2 - 1
-    }));
-
-    function draw() {
-      ctx.clearRect(0, 0, width, height);
-
-      petals.forEach(p => {
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate((p.rotation * Math.PI) / 180);
-        ctx.fillStyle = `rgba(255, 182, 193, ${p.opacity})`;
-
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.bezierCurveTo(-p.size, -p.size, -p.size, p.size, 0, p.size);
-        ctx.bezierCurveTo(p.size, p.size, p.size, -p.size, 0, 0);
-        ctx.fill();
-        ctx.restore();
-
-        p.x += p.speedX;
-        p.y += p.speedY;
-        p.rotation += p.rotSpeed;
-
-        if (p.y > height) {
-          p.y = -20;
-          p.x = Math.random() * width;
-        }
-      });
-
-      requestAnimationFrame(draw);
-    }
-
-    draw();
+    mutObs.observe(document.body, { childList: true, subtree: true });
   }
-});
+
+  /* ═══════════════════════════════════════════
+     Image Protection (우클릭, 드래그, 모바일 꾹 누르기 차단)
+     ═══════════════════════════════════════════ */
+
+  function initImageProtection() {
+    // 우클릭 차단
+    document.addEventListener('contextmenu', (e) => {
+      if (e.target.tagName === 'IMG') {
+        e.preventDefault();
+      }
+    });
+
+    // 드래그 차단
+    document.addEventListener('dragstart', (e) => {
+      if (e.target.tagName === 'IMG') {
+        e.preventDefault();
+      }
+    });
+  }
+
+  /* ═══════════════════════════════════════════
+     Init
+     ═══════════════════════════════════════════ */
+
+  async function init() {
+    setMetaTags();
+    initImageProtection();
+    initCurtain();
+    initHero();
+    initCountdown();
+    initGreeting();
+    initCalendar();
+
+    showLoadingPlaceholders();
+
+    initPhotoModal();
+    initLocation();
+    initAccounts();
+    initFooter();
+    initScrollAnimations();
+
+    $('#storyTitle').textContent = CONFIG.story.title;
+    $('#storyContent').textContent = CONFIG.story.content;
+
+    const [storyImages, galleryImages] = await Promise.all([
+      loadImagesFromFolder('story'),
+      loadImagesFromFolder('gallery')
+    ]);
+
+    initStory(storyImages);
+    initGallery(galleryImages);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
