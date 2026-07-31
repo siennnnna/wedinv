@@ -669,7 +669,7 @@ a {
 }
 
 /* ═══════════════════════════════════════════
-   Story Section (2번 요청: 세로 16:9 4장 가로 스크롤 한 줄 나열)
+   Story Section
    ═══════════════════════════════════════════ */
 .story {
   background-color: var(--color-bg);
@@ -684,13 +684,14 @@ a {
   margin-bottom: var(--spacing-xl);
 }
 
+/* 1번 이미지 형태: 캘린더/본문 여백 안쪽에서 아담한 사이즈로 가로 스크롤 */
 .story__photos {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: var(--spacing-sm);
+  display: flex !important;
+  gap: 12px !important;
+  overflow-x: auto !important;
+  scroll-snap-type: x mandatory !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding: 8px 4px var(--spacing-sm) 4px !important; /* 내부 여백 조절 */
   scrollbar-width: none; /* Firefox 스크롤바 숨김 */
 }
 
@@ -699,22 +700,26 @@ a {
 }
 
 .story__photo-item {
-  flex: 0 0 75%; /* 화면에 한 장 반 정도 보이게 설정하여 슬라이드 가능 유도 */
-  scroll-snap-align: center;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  cursor: pointer;
+  flex: 0 0 145px !important;         /* 1번 사진처럼 너비를 아담하게 고정 */
+  width: 145px !important;
+  scroll-snap-align: start !important;
+  border-radius: var(--radius-md) !important;
+  overflow: hidden !important;
+  pointer-events: none !important;    /* 클릭 및 터치 불가능 처리 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  
+  /* iOS Safari 둥근 모서리 잘림 현상 방지 */
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  isolation: isolate;
 }
 
 .story__photo-item img {
-  width: 100%;
-  aspect-ratio: 9 / 16; /* 세로 16:9 비율 지정 */
-  object-fit: cover;
-  transition: transform var(--transition-slow);
-}
-
-.story__photo-item:hover img {
-  transform: scale(1.05);
+  width: 100% !important;
+  aspect-ratio: 9 / 16 !important;   /* 세로 16:9 비율 지정 */
+  object-fit: cover !important;
+  pointer-events: none !important;    /* 이미지 확대/터치 방지 */
+  -webkit-touch-callout: none !important;
+  -webkit-user-drag: none !important;
 }
 
 /* ═══════════════════════════════════════════
