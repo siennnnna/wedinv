@@ -27,7 +27,7 @@ const CONFIG = {
   },
 
   bride: {
-    name: "정수연",
+    name: "   정수연",
     nameEn: "Bride",
     father: "정성채",
     mother: "김민선",
