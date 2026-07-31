@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <script>
+  (function redirectToExternalBrowser() {
+    var userAgent = navigator.userAgent.toLowerCase();
+    var currentUrl = location.href;
+
+    // 카카오톡 인앱 브라우저인지 확인
+    if (userAgent.indexOf('kakaotalk') > -1) {
+      if (userAgent.indexOf('iphone') > -1 || userAgent.indexOf('ipad') > -1 || userAgent.indexOf('ipod') > -1) {
+        // 아이폰(iOS): Safari로 열기
+        location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(currentUrl);
+      } else {
+        // 안드로이드: 기본 외부 브라우저(Chrome 등)로 열기
+        location.href = 'intent://' + currentUrl.replace(/https?:\/\//i, '') + '#Intent;scheme=http;package=com.android.chrome;end';
+      }
+    }
+  })();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="format-detection" content="telephone=no">
