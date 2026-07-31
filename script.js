@@ -749,3 +749,32 @@
     init();
   }
 })();
+
+
+
+/* ═══════════════════════════════════════════
+   Safari Pinch Zoom & Double Tap Zoom 차단
+   ═══════════════════════════════════════════ */
+
+// 1. 두 손가락으로 화면 줌(Pinch Zoom)하는 제스처 차단
+document.addEventListener('gesturestart', function (e) {
+  e.preventDefault();
+});
+
+document.addEventListener('gesturechange', function (e) {
+  e.preventDefault();
+});
+
+document.addEventListener('gestureend', function (e) {
+  e.preventDefault();
+});
+
+// 2. 더블 타치(연속 두 번 터치)로 인한 확대 차단
+let lastTouchEnd = 0;
+document.addEventListener('touchend', function (e) {
+  const now = new Date().getTime();
+  if (now - lastTouchEnd <= 300) {
+    e.preventDefault();
+  }
+  lastTouchEnd = now;
+}, false);
