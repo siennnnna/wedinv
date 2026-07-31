@@ -420,7 +420,7 @@
       const div = document.createElement('div');
       div.className = 'story__photo-item animate-item';
       div.setAttribute('data-animate', 'fade-up');
-      div.innerHTML = `<img src="${src}" alt="스토리 사진 ${i + 1}" loading="lazy">`;
+      div.innerHTML = `<img src="${src}" alt="스토리 사진 ${i + 1}" loading="lazy" draggable="false">`;
       div.addEventListener('click', () => openPhotoModal(storyImages, i));
       container.appendChild(div);
     });
@@ -445,7 +445,7 @@
       const div = document.createElement('div');
       div.className = 'gallery__item animate-item';
       div.setAttribute('data-animate', 'scale-in');
-      div.innerHTML = `<img src="${src}" alt="갤러리 사진 ${i + 1}" loading="lazy">`;
+      div.innerHTML = `<img src="${src}" alt="갤러리 사진 ${i + 1}" loading="lazy" draggable="false">`;
       div.addEventListener('click', () => openPhotoModal(galleryImages, i));
       grid.appendChild(div);
     });
@@ -583,7 +583,7 @@
     });
   }
 
-  /* 수정: 아코디언 높이 짤림 및 애니메이션 개선 */
+  /* 아코디언 높이 짤림 및 애니메이션 개선 */
   function initAccordion(triggerId, panelId) {
     const trigger = $(`#${triggerId}`);
     const panel = $(`#${panelId}`);
@@ -688,11 +688,32 @@
   }
 
   /* ═══════════════════════════════════════════
+     Image Protection (우클릭, 드래그, 모바일 꾹 누르기 차단)
+     ═══════════════════════════════════════════ */
+
+  function initImageProtection() {
+    // 우클릭 차단
+    document.addEventListener('contextmenu', (e) => {
+      if (e.target.tagName === 'IMG') {
+        e.preventDefault();
+      }
+    });
+
+    // 드래그 차단
+    document.addEventListener('dragstart', (e) => {
+      if (e.target.tagName === 'IMG') {
+        e.preventDefault();
+      }
+    });
+  }
+
+  /* ═══════════════════════════════════════════
      Init
      ═══════════════════════════════════════════ */
 
   async function init() {
     setMetaTags();
+    initImageProtection();
     initCurtain();
     initHero();
     initCountdown();
