@@ -452,7 +452,7 @@
   }
 
   /* ═══════════════════════════════════════════
-     Photo Modal (with swipe)
+     Photo Modal (with swipe) - 수정됨 
      ═══════════════════════════════════════════ */
 
   let modalImages = [];
@@ -470,7 +470,9 @@
     document.body.classList.add('no-scroll');
   }
 
-  function closePhotoModal() {
+  // 닫을 때 기본동작 차단 및 위치 유지되도록 수정
+  function closePhotoModal(e) {
+    if (e && e.preventDefault) e.preventDefault();
     $('#photoModal').classList.remove('is-open');
     document.body.classList.remove('no-scroll');
   }
@@ -493,20 +495,21 @@
   }
 
   function initPhotoModal() {
-    $('#modalClose').addEventListener('click', closePhotoModal);
+    // 닫기 버튼 이벤트 수정 (e 넘겨주기)
+    $('#modalClose').addEventListener('click', (e) => closePhotoModal(e));
     $('#modalPrev').addEventListener('click', () => modalNavigate(-1));
     $('#modalNext').addEventListener('click', () => modalNavigate(1));
 
     const modal = $('#photoModal');
     modal.addEventListener('click', (e) => {
       if (e.target === modal || e.target.id === 'modalContainer') {
-        closePhotoModal();
+        closePhotoModal(e);
       }
     });
 
     document.addEventListener('keydown', (e) => {
       if (!modal.classList.contains('is-open')) return;
-      if (e.key === 'Escape') closePhotoModal();
+      if (e.key === 'Escape') closePhotoModal(e);
       if (e.key === 'ArrowLeft') modalNavigate(-1);
       if (e.key === 'ArrowRight') modalNavigate(1);
     });
@@ -688,7 +691,7 @@
   }
 
   /* ═══════════════════════════════════════════
-     Image Protection (우클릭, 드래그, 모바일 꾹 누르기 차단)
+     Image Protection (우클릭, 드래그 차단)
      ═══════════════════════════════════════════ */
 
   function initImageProtection() {
