@@ -557,6 +557,7 @@ a {
   letter-spacing: 1px;
 }
 
+/* 부모님-관계-자녀이름 줄 정렬 */
 .greeting__parents .parent-row {
   display: flex;
   align-items: center;
@@ -569,8 +570,15 @@ a {
   font-size: 0.5rem;
 }
 
+/* * [수정 포인트]
+ * '의 아들', '의 딸' 뒤의 자녀 이름 위치를 일치시키는 설정
+ */
 .greeting__parents .child-name {
   font-weight: 500;
+  display: inline-block;
+  min-width: 4.2em;      /* 이름 영역의 시작 위치 폭을 일렬로 고정 */
+  text-align: left;       /* 왼쪽 정렬하여 시작 지점 맞춤 */
+  margin-left: 0.8rem;    /* '의 딸'과 이름 사이 띄어쓰기 3칸 정도의 여백 */
 }
 
 .greeting__parents .deceased::before {
@@ -578,6 +586,8 @@ a {
   font-size: 0.75em;
   opacity: 0.6;
 }
+
+
 
 /* ═══════════════════════════════════════════
    Calendar Section
